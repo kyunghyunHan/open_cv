@@ -1,4 +1,6 @@
 mod camera_init;
+mod face_detection;
 fn main(){
-    camera_init::model::main().unwrap();
+    face_detection::model::main().unwrap();
+    // camera_init::model::main().unwrap();
 }
