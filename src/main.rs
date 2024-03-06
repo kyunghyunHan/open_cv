@@ -1,14 +1,6 @@
-mod camera_init;
-mod face_detection;
-mod video_capture;
-mod video_feature;
-mod openc;
+mod image;
+mod video;
 fn main(){
-    face_detection::model::main().unwrap();
-    // video_capture::model::main();
-    // video_capture::model::main();
-    // openc::model::main();
-    // video_capture::model::main();
-    // face_detection::model::main().unwrap();
-    // camera_init::model::main().unwrap();
+    image::imgshow::main().unwrap();
+
 }
