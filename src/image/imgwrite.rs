@@ -1,15 +1,28 @@
 use anyhow::Result;
 use opencv::{
-    core::{self, Mat, Vector}, highgui::{self, imshow}, imgcodecs
+    core::{self, Mat, Vector},
+    highgui::{self, imshow},
+    imgcodecs,
 };
 
 pub fn main() -> Result<()> {
     let source_img = imgcodecs::imread("car.jpeg", imgcodecs::IMREAD_UNCHANGED)?;
-    // highgui::named_window("hello opencv!", 0)?;
     highgui::imshow("hello opencv!", &source_img)?;
-    highgui::wait_key(10000)?;
-    let arguments: Vector<i32> = Vector::new();
 
-    imgcodecs::imwrite("dd.png", &source_img, &arguments)?;
+    loop {
+        let k = highgui::wait_key(0)?;
+        if k == 27 {
+            highgui::destroy_all_windows()?;
+            break;
+        } else if k as u8 as char == 's' {
+            println!("Write");
+            imgcodecs::imwrite("s.png", &source_img, &Vector::new())?;
+        } else if k as u8 as char == 'a' {
+            println!("End");
+            highgui::destroy_all_windows()?;
+            break;
+        }
+    }
+
     Ok(())
 }
