@@ -8,6 +8,7 @@ use opencv::{
     imgcodecs,
 };
 use opencv::prelude::CascadeClassifierTrait;
+
 pub fn main() -> Result<()> {
     let window = "face detection";
 
@@ -19,7 +20,7 @@ pub fn main() -> Result<()> {
     let mut face_detector = objdetect::CascadeClassifier::new(&xml)?;
 
     // 이미지 파일에서 이미지 읽기
-    let mut image = imgcodecs::imread("./img/face.jpg", imgcodecs::IMREAD_COLOR)?;
+    let mut image = imgcodecs::imread("./img/가족2.jpeg", imgcodecs::IMREAD_COLOR)?;
 
     // 그레이스케일로 변환
     let mut gray = core::Mat::default();
@@ -30,23 +31,30 @@ pub fn main() -> Result<()> {
     face_detector.detect_multi_scale(
         &gray,
         &mut faces,
-        1.1,
-        2,
+        1.3, // 이미지 파라미드 스케일
+        1,   // 인접객체 최소거리
         objdetect::CASCADE_SCALE_IMAGE,
-        core::Size { width: 30, height: 30 },
-        core::Size { width: 0, height: 0 },
+        core::Size { width: 30, height: 30 }, // 탐지 객체
+        core::Size { width: 100, height: 100 },
     )?;
 
     // 감지된 얼굴에 사각형 그리기
     for face in faces.iter() {
         let scaled_face = core::Rect::new(
-            face.x * 4,
-            face.y * 4,
-            face.width * 4,
-            face.height * 4,
+            face.x * 1,
+            face.y * 1,
+            face.width * 1,
+            face.height * 1,
         );
-        imgproc::rectangle(&mut image, scaled_face, core::Scalar::new(0.0, 255.0, 0.0, 0.0), 2, 8, 0)?;
+        imgproc::rectangle(&mut image, scaled_face, core::Scalar::new(255.0, 0.0, 0.0, 0.0), 2, 8, 0)?;
+
+        // 얼굴 위에 텍스트 추가
+        let text = format!("Face: ({}, {})", face.x, face.y);
+        let org = core::Point::new(face.x, face.y - 10);
+        imgproc::put_text(&mut image, &text, org, imgproc::FONT_HERSHEY_SIMPLEX, 0.5, core::Scalar::new(0.0, 255.0, 0.0, 0.0), 1, imgproc::LINE_AA, false)?;
     }
+
+    println!("Detected faces: {}", faces.len());
 
     // 결과를 화면에 표시
     highgui::imshow(window, &image)?;
