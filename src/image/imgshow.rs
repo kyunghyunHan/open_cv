@@ -1,6 +1,7 @@
 use anyhow::Result;
 use opencv::{
-    core::{self, Mat, Vector}, highgui::{self, imshow}, imgcodecs
+    core::{self, Mat, Vector}, highgui::{self, imshow}, imgcodecs,    imgproc,
+
 };
 
 pub fn main() -> Result<()> {

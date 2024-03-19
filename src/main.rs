@@ -1,6 +1,7 @@
 mod image;
 mod video;
+
 fn main(){
-    image::imgwrite::main().unwrap();
+    image::face::main().unwrap();
 
 }

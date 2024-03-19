@@ -1,20 +1,24 @@
 use anyhow::Result;
 use opencv::{
-    core::{self, Mat, MatTraitConstManual, Vector,CV_8UC3},
-    highgui::{self, imshow},
+    
+    core::{self, Mat, MatTraitConstManual, Vec3b, Vector, CV_8UC3},
+    highgui::{self, imshow,},
     imgcodecs,
+    imgproc,
     types,
 };
 use opencv::prelude::MatTraitConst;
 pub fn main() -> Result<()> {
-    let source_img = imgcodecs::imread("car.jpeg", imgcodecs::IMREAD_GRAYSCALE)?;
+    let source_img = imgcodecs::imread("car.jpeg", imgcodecs::IMREAD_UNCHANGED)?;
+    
     highgui::imshow("hello opencv!", &source_img)?;
     // let resized_img = resize_with_padding(&rgb_mat, [192, 192]);
     // let img_vec_3d = mat_to_vec_3d(&source_img);
     // println!("{:?}",img_vec_3d);
     // println!("{:?}",source_img.to_vec_2d::<u8>().unwrap());
+    
+    let test:Vec<Vec<Vec3b>>= source_img.to_vec_2d()?;
 
-    let test= source_img.to_vec_2d::<u8>()?;
     println!("test{:?}",test);
     loop {
         let k = highgui::wait_key(0)?;
