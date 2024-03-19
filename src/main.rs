@@ -1,7 +1,8 @@
+
 mod image;
 mod video;
+mod cam;
 
-fn main(){
-    image::image_face_object_detection::main().unwrap();
-
+pub fn main()  {
+  video::video::main().unwrap();   
 }
