@@ -49,7 +49,7 @@ pub fn main() -> Result<()> {
         imgproc::rectangle(&mut image, scaled_face, core::Scalar::new(255.0, 0.0, 0.0, 0.0), 2, 8, 0)?;
 
         // 얼굴 위에 텍스트 추가
-        let text = format!("Face: ({}, {})", face.x, face.y);
+        let text = format!("eye: ({}, {})", face.x, face.y);
         let org = core::Point::new(face.x, face.y - 10);
         imgproc::put_text(&mut image, &text, org, imgproc::FONT_HERSHEY_SIMPLEX, 0.5, core::Scalar::new(0.0, 255.0, 0.0, 0.0), 1, imgproc::LINE_AA, false)?;
     }

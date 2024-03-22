@@ -16,11 +16,11 @@ pub fn main() -> Result<()> {
     highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
 
     // 얼굴 감지기 초기화
-    let xml = core::find_file_def("haarcascades/haarcascade_frontalcatface.xml")?;
+    let xml = core::find_file_def("haarcascades/haarcascade_frontalface_alt.xml")?;
     let mut face_detector = objdetect::CascadeClassifier::new(&xml)?;
 
     // 이미지 파일에서 이미지 읽기
-    let mut image = imgcodecs::imread("./img/cats1.jpeg", imgcodecs::IMREAD_COLOR)?;
+    let mut image = imgcodecs::imread("./img/가족2.jpeg", imgcodecs::IMREAD_COLOR)?;
 
     // 그레이스케일로 변환
     let mut gray = core::Mat::default();
@@ -34,8 +34,8 @@ pub fn main() -> Result<()> {
         1.3, // 이미지 파라미드 스케일
         1,   // 인접객체 최소거리
         objdetect::CASCADE_SCALE_IMAGE,
-        core::Size { width: 30, height: 30 }, // 탐지 객체
-        core::Size { width: 100, height: 100 },
+        core::Size { width: 10, height: 10 }, // 탐지 객체
+        core::Size { width: 1000, height: 1000 },
     )?;
 
     // 감지된 얼굴에 사각형 그리기
