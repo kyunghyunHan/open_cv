@@ -9,7 +9,10 @@ pub fn main() -> Result<()> {
 	}
 	loop {
 		let mut frame = Mat::default();
+		
 		cam.read(&mut frame)?;
+		
+		
 		if frame.size()?.width > 0 {
 			highgui::imshow(window, &frame)?;
 		}
