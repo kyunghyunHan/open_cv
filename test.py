@@ -22,7 +22,7 @@ while True:
 
     # 얼굴 특징점 찾기
     landmarks = predictor(img, face)
-    shape_2d = np.array([[p.x, p.y] for p in landmarks.parts()])
+    # shape_2d = np.array([[p.x, p.y] for p in landmarks.parts()])
     # 특징점 처리
     for p in range(0, landmarks.num_parts):
         cv2.circle(img, center=(landmarks.part(p).x, landmarks.part(p).y), radius=1, color=(255, 255, 255), thickness=2, lineType=cv2.LINE_AA)

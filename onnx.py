@@ -29,3 +29,6 @@ torch.onnx.export(model, input_data, onnx_model_path, export_params=True)
 # ONNX로 모델 저장
 onnx_model_path = 'simple_model.onnx'
 torch.onnx.export(model, input_data, onnx_model_path, export_params=True)
+
+
+
