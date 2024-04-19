@@ -1,0 +1,9 @@
+/target
+/img
+/dataset
+girl.mp4
+ryan_transparent.png
+shape_predictor_68_face_landmarks.dat
+/checkpoint
+/data
+mnist_cnn.pt
