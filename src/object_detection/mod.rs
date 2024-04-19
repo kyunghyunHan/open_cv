@@ -192,3 +192,6 @@ fn detect_eyes() -> Result<()> {
 
     Ok(())
 }
+fn hog()->Result<()>{
+    Ok(())
+}

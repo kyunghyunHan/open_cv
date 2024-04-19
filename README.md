@@ -1,5 +1,27 @@
 # open_cv
+## 
+- m1기준
 
+```
+opencv = "0.90.0"
+```
+```
+vi ~/.zshrc
+```
+```
+brew install pkg-config
+brew install cmake
+brew install --debug llvm-dev
+brew install libopencv-dev
+
+```
+```
+export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+export LDFLAGS="-L/opt/homebrew/opt/llvm/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/llvm/include"
+export PATH="/usr/local/opt/llvm/bin:$PATH"
+
+```
 ## 데이터셋
 
 - 사람얼굴감지 :haarcascade_frontalface_alt.xml
@@ -18,4 +40,5 @@
  - ml:통게적 분류,회기 등 머신러닝 알고리즘
  - object:얼굴 ,보행자,검출등 객체검출
  - prhto:잡음제거
+- 
  - 
