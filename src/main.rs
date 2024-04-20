@@ -25,6 +25,7 @@ mod utils;
 mod video;
 mod object_detection;
 pub fn main() {
-    object_detection::main().unwrap();
+    image::imgshow::main().unwrap();
+    // object_detection::main().unwrap();
     //test
 }

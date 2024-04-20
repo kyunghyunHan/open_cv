@@ -1,13 +1,9 @@
-use opencv::{
-    Result,
-    core::{self, Mat, Vector}, highgui::{self, imshow}, imgcodecs,    imgproc,
 
-};
-
+use opencv::{Result,core,highgui,imgcodecs,imgproc};
 pub fn main() -> Result<()> {
-    let source_img = imgcodecs::imread("car.jpeg", imgcodecs::IMREAD_UNCHANGED)?;
-    // highgui::named_window("hello opencv!", 0)?;
-    highgui::imshow("hello opencv!", &source_img)?;
-    highgui::wait_key(10000)?;
+    let src = imgcodecs::imread("./img/lion.png", imgcodecs::IMREAD_COLOR)?;
+    highgui::imshow("hello opencv!", &src)?;
+    highgui::wait_key(0)?;
+    highgui::destroy_all_windows()?;
     Ok(())
 }
