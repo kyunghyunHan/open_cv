@@ -8,6 +8,7 @@ use opencv::{
     imgcodecs::{self, IMREAD_GRAYSCALE},
     imgproc, Result,
 };
+
 use opencv::prelude::MatTrait;
 use rand::Rng;
 use std::process::exit;

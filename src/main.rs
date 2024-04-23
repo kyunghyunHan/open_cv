@@ -24,8 +24,9 @@ mod torch;
 mod utils;
 mod video;
 mod object_detection;
+mod hog;
 pub fn main() {
-    image::imgshow::main().unwrap();
+    hog::main();
     // object_detection::main().unwrap();
     //test
 }
