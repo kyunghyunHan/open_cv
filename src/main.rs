@@ -25,8 +25,10 @@ mod utils;
 mod video;
 mod object_detection;
 mod hog;
+mod qr_code;
+mod keypoint;
 pub fn main() {
-    hog::main();
+    keypoint::main().unwrap();
     // object_detection::main().unwrap();
     //test
 }
