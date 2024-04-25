@@ -27,8 +27,9 @@ mod object_detection;
 mod hog;
 mod qr_code;
 mod keypoint;
+mod matching;
 pub fn main() {
-    keypoint::main().unwrap();
+    matching::main().unwrap();
     // object_detection::main().unwrap();
     //test
 }
