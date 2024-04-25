@@ -33,18 +33,18 @@ fn keypoint_matching() -> Result<()> {
     matcher.match_(&desc1, &mut matches, &desc2)?;
 
     let mut dst = core::Mat::default();
-    features2d::draw_matches(
-        &src1,
-        &keypoints1,
-        &src2,
-        &keypoints2,
-        &mut matches,
-        &mut dst,
-        core::Scalar::default(),
-        core::Scalar::default(),
-        &no_array(),
-        &no_array(),
-    )?;
+    // features2d::draw_matches(
+    //     &src1,
+    //     &keypoints1,
+    //     &src2,
+    //     &keypoints2,
+    //     &mut matches,
+    //     &mut dst,
+    //     core::Scalar::default(),
+    //     core::Scalar::default(),
+    //     &no_array(),
+    //     &no_array(),
+    // )?;
 
     Ok(())
 }
