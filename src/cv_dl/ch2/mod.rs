@@ -6,7 +6,7 @@ use opencv::{
 };
 
 pub fn main() -> Result<()> {
-    img_display()?;
+    text_rectangle()?;
     Ok(())
 }
 
@@ -120,6 +120,26 @@ pub fn video_capture_three() -> Result<()> {
     }
     Ok(())
 }
-fn text() -> Result<()> {
+fn text_rectangle() -> Result<()> {
+    let mut img = imgcodecs::imread("./img/face.jpg", imgcodecs::IMREAD_COLOR)?;
+    if img.empty() {
+        println!("{}", "image load failed");
+        std::process::exit(0);
+    }
+
+    imgproc::rectangle(
+        &mut img,
+        core::Rect_::from((415, 30, 500, 200)),
+        core::Scalar::from((0, 0, 255)),
+        2,
+        imgproc::LINE_AA,
+        0,
+    )?;
+
+    imgproc::put_text(&mut img, "laugh", core::Point_::from((830,24)), imgproc::FONT_HERSHEY_SIMPLEX, 1., core::Scalar::from((255,0,0)), 2, imgproc::LINE_AA, false)?;
+
+    highgui::imshow("Draw", &img)?;
+    highgui::wait_key(0)?;
+    highgui::destroy_all_windows()?;
     Ok(())
 }

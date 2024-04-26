@@ -31,7 +31,7 @@ mod utils;
 mod video;
 mod deep_learning;
 pub fn main() {
-    matching::main().unwrap();
+    cv_dl::main();
     // object_detection::main().unwrap();
     //test
 }
