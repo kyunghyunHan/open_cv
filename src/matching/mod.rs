@@ -5,6 +5,7 @@ use opencv::{
 };
 
 pub fn main() -> Result<()> {
+    keypoint_matching()?;
     Ok(())
 }
 
@@ -33,18 +34,20 @@ fn keypoint_matching() -> Result<()> {
     matcher.match_(&desc1, &mut matches, &desc2)?;
 
     let mut dst = core::Mat::default();
-    // features2d::draw_matches(
-    //     &src1,
-    //     &keypoints1,
-    //     &src2,
-    //     &keypoints2,
-    //     &mut matches,
-    //     &mut dst,
-    //     core::Scalar::default(),
-    //     core::Scalar::default(),
-    //     &no_array(),
-    //     &no_array(),
-    // )?;
-
+    features2d::draw_matches(
+        &src1,
+        &keypoints1,
+        &src2,
+        &keypoints2,
+        &mut matches,
+        &mut dst,
+        core::Scalar::default(),
+        core::Scalar::default(),
+        &core::Vector::from_iter([4]),
+        features2d::DrawMatchesFlags::DEFAULT,
+    )?;
+    highgui::imshow("dst", &dst)?;
+    highgui::wait_key(0)?;
+    highgui::destroy_all_windows()?;
     Ok(())
 }

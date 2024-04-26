@@ -10,26 +10,27 @@ mod edges;
 mod filter;
 mod google_net;
 mod histogram;
+mod hog;
 mod hough;
 mod image;
 mod keyboard;
+mod keypoint;
 mod labeling;
+mod machine_learning;
+mod matching;
 mod module;
 mod mouse_event;
+mod object_detection;
 mod perspective;
+mod qr_code;
 mod snow;
 mod ssd_face_detector;
 mod storage;
 mod torch;
 mod utils;
 mod video;
-mod object_detection;
-mod hog;
-mod qr_code;
-mod keypoint;
-mod matching;
 pub fn main() {
-    cv_dl::main();
+    matching::main().unwrap();
     // object_detection::main().unwrap();
     //test
 }
