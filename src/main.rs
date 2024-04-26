@@ -29,6 +29,7 @@ mod storage;
 mod torch;
 mod utils;
 mod video;
+mod deep_learning;
 pub fn main() {
     matching::main().unwrap();
     // object_detection::main().unwrap();
