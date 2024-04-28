@@ -1,12 +1,14 @@
 use opencv::{
     core::{self, MatTraitConst},
-    highgui, imgcodecs, imgproc,
+    highgui::{self, WINDOW_AUTOSIZE},
+    imgcodecs, imgproc,
     videoio::{self, VideoCaptureTrait, VideoCaptureTraitConst},
     Result,
 };
+use std::sync::{Arc, Mutex};
 
 pub fn main() -> Result<()> {
-    text_rectangle()?;
+    mouse_rectangle()?;
     Ok(())
 }
 
@@ -136,10 +138,80 @@ fn text_rectangle() -> Result<()> {
         0,
     )?;
 
-    imgproc::put_text(&mut img, "laugh", core::Point_::from((830,24)), imgproc::FONT_HERSHEY_SIMPLEX, 1., core::Scalar::from((255,0,0)), 2, imgproc::LINE_AA, false)?;
+    imgproc::put_text(
+        &mut img,
+        "laugh",
+        core::Point_::from((830, 24)),
+        imgproc::FONT_HERSHEY_SIMPLEX,
+        1.,
+        core::Scalar::from((255, 0, 0)),
+        2,
+        imgproc::LINE_AA,
+        false,
+    )?;
 
     highgui::imshow("Draw", &img)?;
     highgui::wait_key(0)?;
     highgui::destroy_all_windows()?;
+    Ok(())
+}
+/*마우스를 클릭한 곳에 직사각형 그리기 */
+
+fn mouse_rectangle() -> Result<()> {
+    let mut img: Arc<Mutex<core::Mat>> = Arc::new(Mutex::new(imgcodecs::imread(
+        "./img/face.jpg",
+        imgcodecs::IMREAD_COLOR,
+    )?));
+
+    if img.lock().unwrap().empty() {
+        println!("image load failed");
+        std::process::exit(0);
+    }
+    let img_clone = Arc::clone(&img);
+
+    highgui::named_window("Drawing", WINDOW_AUTOSIZE)?;
+    highgui::imshow("Drawing", &*img_clone.lock().unwrap())?;
+    highgui::set_mouse_callback(
+        "Drawing",
+        Some(Box::new({
+            move |event, x, y, _flag| {
+                let mut img_guard = img_clone.lock().unwrap();
+                println!("1");
+
+                if event == highgui::EVENT_LBUTTONDOWN {
+                    println!("1");
+                    imgproc::rectangle(
+                        &mut *img_guard,
+                        core::Rect::from((x, y, x + 200, y + 200)),
+                        core::Scalar::from((0, 0, 255)),
+                        2,
+                        imgproc::LINE_AA,
+                        0,
+                    )
+                    .unwrap()
+                } else if event == highgui::EVENT_RBUTTONDOWN {
+                    println!("1");
+                    imgproc::rectangle(
+                        &mut *img_guard,
+                        core::Rect::from((x, y, x + 100, y + 100)),
+                        core::Scalar::from((255, 0, 0)),
+                        2,
+                        imgproc::LINE_AA,
+                        0,
+                    )
+                    .unwrap()
+                }
+
+                highgui::imshow("Drawing", &*img_guard).unwrap();
+            }
+        })),
+    )?;
+
+    loop {
+        if highgui::wait_key(1)? as u8 as char == 'q' {
+            highgui::destroy_all_windows()?;
+            break;
+        }
+    }
     Ok(())
 }
