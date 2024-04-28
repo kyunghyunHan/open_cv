@@ -8,7 +8,7 @@ use opencv::{
 use std::sync::{Arc, Mutex};
 
 pub fn main() -> Result<()> {
-    mouse_rectangle()?;
+    mouse_drag_rectangle()?;
     Ok(())
 }
 
@@ -195,6 +195,58 @@ fn mouse_rectangle() -> Result<()> {
                         &mut *img_guard,
                         core::Rect::from((x, y, x + 100, y + 100)),
                         core::Scalar::from((255, 0, 0)),
+                        2,
+                        imgproc::LINE_AA,
+                        0,
+                    )
+                    .unwrap()
+                }
+
+                highgui::imshow("Drawing", &*img_guard).unwrap();
+            }
+        })),
+    )?;
+
+    loop {
+        if highgui::wait_key(1)? as u8 as char == 'q' {
+            highgui::destroy_all_windows()?;
+            break;
+        }
+    }
+    Ok(())
+}
+fn mouse_drag_rectangle() -> Result<()> {
+    let mut img: Arc<Mutex<core::Mat>> = Arc::new(Mutex::new(imgcodecs::imread(
+        "./img/face.jpg",
+        imgcodecs::IMREAD_COLOR,
+    )?));
+
+    if img.lock().unwrap().empty() {
+        println!("image load failed");
+        std::process::exit(0);
+    }
+    let img_clone = Arc::clone(&img);
+
+    highgui::named_window("Drawing", WINDOW_AUTOSIZE)?;
+    highgui::imshow("Drawing", &*img_clone.lock().unwrap())?;
+    let mut ix = 0;
+    let mut iy = 0;
+    highgui::set_mouse_callback(
+        "Drawing",
+        Some(Box::new({
+            move |event, x, y, _flag| {
+                let mut img_guard = img_clone.lock().unwrap();
+                println!("1");
+               
+                if event == highgui::EVENT_LBUTTONDOWN {
+                    ix = x;
+                    iy = y;
+                } else if event == highgui::EVENT_LBUTTONUP{
+                    println!("1");
+                    imgproc::rectangle(
+                        &mut *img_guard,
+                        core::Rect::from((ix, iy, x , y )),
+                        core::Scalar::from((0, 0, 255)),
                         2,
                         imgproc::LINE_AA,
                         0,
