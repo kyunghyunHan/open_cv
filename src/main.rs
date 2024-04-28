@@ -30,6 +30,7 @@ mod torch;
 mod utils;
 mod video;
 mod deep_learning;
+
 pub fn main() {
     cv_dl::main();
     // object_detection::main().unwrap();
