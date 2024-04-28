@@ -8,7 +8,7 @@ use opencv::{
 use std::sync::{Arc, Mutex};
 
 pub fn main() -> Result<()> {
-    mouse_drag_rectangle()?;
+    mouse_brush_rectangle()?;
     Ok(())
 }
 
@@ -237,21 +237,106 @@ fn mouse_drag_rectangle() -> Result<()> {
             move |event, x, y, _flag| {
                 let mut img_guard = img_clone.lock().unwrap();
                 println!("1");
-               
+
                 if event == highgui::EVENT_LBUTTONDOWN {
                     ix = x;
                     iy = y;
-                } else if event == highgui::EVENT_LBUTTONUP{
+                } else if event == highgui::EVENT_LBUTTONUP {
                     println!("1");
                     imgproc::rectangle(
                         &mut *img_guard,
-                        core::Rect::from((ix, iy, x , y )),
+                        core::Rect::from((ix, iy, x, y)),
                         core::Scalar::from((0, 0, 255)),
                         2,
                         imgproc::LINE_AA,
                         0,
                     )
                     .unwrap()
+                }
+
+                highgui::imshow("Drawing", &*img_guard).unwrap();
+            }
+        })),
+    )?;
+
+    loop {
+        if highgui::wait_key(1)? as u8 as char == 'q' {
+            highgui::destroy_all_windows()?;
+            break;
+        }
+    }
+    Ok(())
+}
+fn mouse_brush_rectangle() -> Result<()> {
+    let mut img: Arc<Mutex<core::Mat>> = Arc::new(Mutex::new(imgcodecs::imread(
+        "./img/face.jpg",
+        imgcodecs::IMREAD_COLOR,
+    )?));
+
+    if img.lock().unwrap().empty() {
+        println!("image load failed");
+        std::process::exit(0);
+    }
+    let img_clone = Arc::clone(&img);
+
+    highgui::named_window("Drawing", WINDOW_AUTOSIZE)?;
+    highgui::imshow("Drawing", &*img_clone.lock().unwrap())?;
+    let mut ix = 0;
+    let mut iy = 0;
+    let brush_size = 5;
+    let (l_color, r_colort) = ((255, 0, 0), (0, 0, 255));
+    highgui::set_mouse_callback(
+        "Drawing",
+        Some(Box::new({
+            move |event, x, y, _flag| {
+                let mut img_guard = img_clone.lock().unwrap();
+
+                if event == highgui::EVENT_LBUTTONDOWN {
+                    imgproc::circle(
+                        &mut *img_guard,
+                        core::Point_::from((x, y)),
+                        brush_size,
+                        core::Scalar::from(l_color),
+                        -1,
+                        imgproc::LINE_AA,
+                        0,
+                    )
+                    .unwrap();
+                } else if event == highgui::EVENT_RBUTTONDOWN {
+                    imgproc::circle(
+                        &mut *img_guard,
+                        core::Point_::from((x, y)),
+                        brush_size,
+                        core::Scalar::from(r_colort),
+                        -1,
+                        imgproc::LINE_AA,
+                        0,
+                    )
+                    .unwrap();
+                } else if event == highgui::EVENT_MOUSEMOVE && _flag == highgui::EVENT_FLAG_LBUTTON
+                {
+                    imgproc::circle(
+                        &mut *img_guard,
+                        core::Point_::from((x, y)),
+                        brush_size,
+                        core::Scalar::from(l_color),
+                        -1,
+                        imgproc::LINE_AA,
+                        0,
+                    )
+                    .unwrap();
+                } else if event == highgui::EVENT_MOUSEMOVE && _flag == highgui::EVENT_FLAG_RBUTTON
+                {
+                    imgproc::circle(
+                        &mut *img_guard,
+                        core::Point_::from((x, y)),
+                        brush_size,
+                        core::Scalar::from(r_colort),
+                        -1,
+                        imgproc::LINE_AA,
+                        0,
+                    )
+                    .unwrap();
                 }
 
                 highgui::imshow("Drawing", &*img_guard).unwrap();
