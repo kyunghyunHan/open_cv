@@ -71,9 +71,10 @@ pub fn main() -> Result<()> {
         false,
         core::CV_32F,
     )?;
-    net.set_input(&input_blob, "data", 1.0, Scalar::default())?;
     let mut net_output = VectorOfMat::new();
-    let names = get_output_names(&net)?;
+    // let names = get_output_names(&net)?;
+    let names = net.get_unconnected_out_layers_names()?;
+
     net.forward(&mut net_output, &names)?;
 
     let mut class_ids = VectorOfi32::new();
