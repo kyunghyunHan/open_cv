@@ -32,7 +32,7 @@ mod video;
 mod deep_learning;
 mod yolo;
 pub fn main() {
-    yolo::main().unwrap()
+    ssd_face_detector::main().unwrap()
     // object_detection::main().unwrap();
     //test
 }
