@@ -41,4 +41,11 @@ export PATH="/usr/local/opt/llvm/bin:$PATH"
  - object:얼굴 ,보행자,검출등 객체검출
  - prhto:잡음제거
 - 
- - 
+
+## 
+
+```
+[profile.dev]
+opt-level = 3
+
+```

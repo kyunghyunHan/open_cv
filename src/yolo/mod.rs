@@ -1,12 +1,13 @@
-use opencv::prelude::MatExprTraitConst;
 use opencv::prelude::MatTraitConst;
-use opencv::prelude::MatTraitConstManual;
 use opencv::prelude::NetTrait;
 use opencv::prelude::NetTraitConst;
 use opencv::prelude::VideoCaptureTrait;
 use opencv::prelude::VideoCaptureTraitConst;
 use opencv::{core, dnn, highgui, imgcodecs, imgproc, types, videoio, Result};
+use opencv::prelude::UMatTraitConst;
 pub fn main() -> Result<()> {
+
+    
     let model = "./yolov8n.onnx";
     let mut cap = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
 
@@ -26,16 +27,18 @@ pub fn main() -> Result<()> {
 
     loop {
         let mut frame = core::Mat::default();
+   
         //카메라 또는 동영상 파일로 부터 다음 프레임을 받아와서 MAt클랙스 형식의 변수 이미지에 저장
         cap.read(&mut frame)?;
-
+        let mut umat: core::UMat  = core::UMat::new_def();
+        frame.copy_to(&mut umat)?;
         if frame.empty() {
             println!("{}", "Net Open Failed");
             std::process::exit(0);
         }
 
         let blob = dnn::blob_from_image(
-            &frame,
+            &umat,
             1.0 / 255.0,
             core::Size::from((640, 640)),
             core::Scalar::from((0., 0., 0., 0.)),
@@ -47,21 +50,15 @@ pub fn main() -> Result<()> {
         let mut net_output: core::Vector<core::Mat> = core::Vector::new();
         net.set_input(&blob, "", 1.0, core::Scalar::default())?;
         net.forward(&mut net_output, &out_layer_names)?;
-
         let res = net_output.get(0)?;
-
-        // let rows = *res.mat_size().get(1).unwrap();
         let rows = *res.mat_size().get(2).unwrap(); // 8400
-
-        println!("{}", rows);
         let cols = *res.mat_size().get(1).unwrap(); // M
-        println!("{}", cols);
         let mut boxes: core::Vector<core::Rect> = core::Vector::default();
         let mut scores: core::Vector<f32> = core::Vector::default();
         let mut indices: core::Vector<i32> = core::Vector::default();
         let mut class_index_list: core::Vector<i32> = core::Vector::default();
-        let x_scale = frame.cols() as f32 / 640f32;
-        let y_scale = frame.rows() as f32 / 640f32;
+        let x_scale = umat.cols() as f32 / 640f32;
+        let y_scale = umat.rows() as f32 / 640f32;
 
         for row in 0..rows {
             let mut vec: Vec<f32> = Vec::new();
@@ -98,37 +95,56 @@ pub fn main() -> Result<()> {
         dnn::nms_boxes(&boxes, &scores, 0.5, 0.5, &mut indices, 1.0, 0)?;
         let mut final_boxes: Vec<BoxDetection> = Vec::default();
         for i in &indices {
-            
             let class = class_index_list.get(i as usize)?;
             let rect = boxes.get(i as usize)?;
 
-            let bbox = BoxDetection{
+            let bbox = BoxDetection {
                 xmin: rect.x,
                 ymin: rect.y,
                 xmax: rect.x + rect.width,
                 ymax: rect.y + rect.height,
                 conf: scores.get(i as usize)?,
-                class: class
+                class: class,
             };
 
             final_boxes.push(bbox);
         }
         for i in 0..final_boxes.len() {
-            
-            let bbox = &final_boxes[i];
-            let rect = core::Rect::new(bbox.xmin, bbox.ymin, bbox.xmax - bbox.xmin, bbox.ymax - bbox.ymin);
+            let bbox: &_ = &final_boxes[i];
+            let rect = core::Rect::new(
+                bbox.xmin,
+                bbox.ymin,
+                bbox.xmax - bbox.xmin,
+                bbox.ymax - bbox.ymin,
+            );
 
-            let label =bbox.class.to_string();
-            println!("{}",label);
+            let label = bbox.class.to_string();
+            println!("{}", label);
             if label == "0" {
                 let box_color = core::Scalar::from(((0.0, 255.0, 0.0))); // green color
-                opencv::imgproc::rectangle(&mut frame, rect, box_color, 2, opencv::imgproc::LINE_8, 0).unwrap();
+                opencv::imgproc::rectangle(
+                    &mut umat,
+                    rect,
+                    box_color,
+                    2,
+                    opencv::imgproc::LINE_8,
+                    0,
+                )
+                .unwrap();
             } else if label == "bicycle" {
                 let box_color = core::Scalar::new(0.0, 165.0, 255.0, 0.0); // orange color
-                opencv::imgproc::rectangle(&mut frame, rect, box_color, 2, opencv::imgproc::LINE_8, 0).unwrap();
-            } 
+                opencv::imgproc::rectangle(
+                    &mut umat,
+                    rect,
+                    box_color,
+                    2,
+                    opencv::imgproc::LINE_8,
+                    0,
+                )
+                .unwrap();
+            }
         }
-        highgui::imshow("frame", &frame)?;
+        highgui::imshow("frame", &umat)?;
         if highgui::wait_key(1)? == 27 {
             break;
         }
@@ -136,26 +152,12 @@ pub fn main() -> Result<()> {
 
     Ok(())
 }
-// yolo.rs
-fn pre_process(img: &core::Mat) -> opencv::Result<core::Mat> {
-    let width = img.cols();
-    let height = img.rows();
 
-    let _max = std::cmp::max(width, height);
-    // keep the original aspect ratio by adding black padding
-    let mut result = core::Mat::zeros(_max, _max, core::CV_8UC3)
-        .unwrap()
-        .to_mat()
-        .unwrap();
-    img.copy_to(&mut result)?;
-
-    Ok(result)
-}
 pub struct BoxDetection {
-    pub xmin: i32, // bounding box left-top x
-    pub ymin: i32, // bounding box left-top y
-    pub xmax: i32, // bounding box right-bottom x
-    pub ymax: i32, // bounding box right-bottom y
-    pub class: i32, // class index
-    pub conf: f32  // confidence score
+    pub xmin: i32,  
+    pub ymin: i32, 
+    pub xmax: i32,  
+    pub ymax: i32, 
+    pub class: i32, 
+    pub conf: f32,  // confidence score
 }
