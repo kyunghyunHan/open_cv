@@ -145,7 +145,7 @@ fn detect_eyes() -> Result<()> {
         std::process::exit(0);
     }
     let mut faces: core::Vector<core::Rect> = core::Vector::new();
-    face_classifier.detect_multi_scale(
+    face_classifier.detect_multi_scale( 
         &src,
         &mut faces,
         1.3,

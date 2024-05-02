@@ -15,6 +15,7 @@ pub fn main() -> Result<()> {
         println!("{}", " Camera open failed!");
         std::process::exit(0);
     }
+  
 
     let mut net = dnn::read_net_from_onnx(model)?;
     // let out_names = net.get_unconnected_out_layers_names().unwrap();

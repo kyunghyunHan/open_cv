@@ -1,4 +1,4 @@
-use opencv::core::{no_array, randn, Size_, CV_32SC1};
+use opencv::core::{no_array, randn, MatTraitConstManual, Size_, CV_32SC1};
 use opencv::gapi::{self, gaussian_blur};
 use opencv::highgui::wait_key;
 use opencv::imgproc::{FONT_HERSHEY_SIMPLEX, LINE_AA};
@@ -21,7 +21,10 @@ fn embossing_filter() -> Result<()> {
     let src = imgcodecs::imread("./img/face.jpg", IMREAD_GRAYSCALE)?;
 
     let mut dst = Mat::default();
-    let emboss = Mat::from_slice_2d(&vec![vec![-1, -1, 0], vec![-1, 0, 1], vec![0, 1, 1]]).unwrap();
+    let ve=vec![0u8];
+     let a= dst.to_vec_2d::<u8>();
+     let a = mat_to_vec_1d(&dst);
+     let emboss = Mat::from_slice_2d(&vec![vec![-1, -1, 0], vec![-1, 0, 1], vec![0, 1, 1]]).unwrap();
 
     if src.empty() {
         exit(0);
@@ -244,4 +247,21 @@ fn median_filter() -> Result<()> {
 
 
     Ok(())
+}
+fn mat_to_vec_1d(mat: &core::Mat) -> Vec<u8> {
+    // Mat 객체의 크기를 가져옴
+    let rows = mat.rows() as usize;
+    let cols = mat.cols() as usize;
+
+    // Mat 객체의 데이터를 1차원 벡터로 변환
+    let mut vec_1d = Vec::with_capacity(rows * cols);
+    for row in 0..rows {
+        for col in 0..cols {
+            // 픽셀 값을 가져와서 복사하여 벡터에 추가
+            let pixel_value = *mat.at_2d::<u8>(row as i32, col as i32).unwrap();
+            vec_1d.push(pixel_value);
+        }
+    }
+
+    vec_1d
 }

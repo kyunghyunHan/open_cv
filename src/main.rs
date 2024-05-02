@@ -31,6 +31,7 @@ mod utils;
 mod video;
 mod deep_learning;
 mod yolo;
+
 pub fn main() {
     yolo::main().unwrap()
     // object_detection::main().unwrap();

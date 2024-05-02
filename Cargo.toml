@@ -6,9 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-opencv = "0.89.0"
+opencv = "0.91.2"
 bytes = "1"
 rand = "0.8.5"
 
-[profile.dev]
-opt-level = 3

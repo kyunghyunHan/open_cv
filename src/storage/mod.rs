@@ -23,11 +23,11 @@ fn write_data() -> Result<()> {
     let stride = 2 * 4; // 2 columns * 4 bytes per element (CV_32F)
 
     // Create a new 2x2 Mat object with the data
-    let mat1 = unsafe {
-        Mat::new_rows_cols_with_data(2, 2, CV_32F, data.as_ptr() as *mut std::ffi::c_void, stride)
-            .unwrap()
-    };
-    println!("{:?}", mat1);
+    // let mat1 = unsafe {
+    //     Mat::new_rows_cols_with_data(2, 2, CV_32F, data.as_ptr() as *mut std::ffi::c_void, stride)
+    //         .unwrap()
+    // };
+    // println!("{:?}", mat1);
 
     let fs = FileStorage::new_def("aa", 0)?;
     println!("{:?}",fs);
