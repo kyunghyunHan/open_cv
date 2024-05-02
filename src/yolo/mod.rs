@@ -147,6 +147,7 @@ pub fn main() -> Result<()> {
                 .unwrap();
             }
         }
+        highgui::named_window("frame", highgui::WINDOW_OPENGL)?;
         highgui::imshow("frame", &umat)?;
         if highgui::wait_key(1)? == 27 {
             break;

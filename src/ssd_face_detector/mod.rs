@@ -4,19 +4,22 @@ use opencv::prelude::NetTraitConst;
 use opencv::prelude::VideoCaptureTrait;
 use opencv::prelude::VideoCaptureTraitConst;
 use opencv::{core, dnn, highgui, imgcodecs, imgproc, types, videoio, Result};
-use opencv::prelude::UMatTraitConst;
 pub fn main() -> Result<()> {
 
     
-    let model = "./dataset/yolov8n.onnx";
+    let model = "./dataset/res10_300x300_ssd_iter_140000_fp16.caffemodel";
+    let protext = "./dataset/deploy.prototxt";
     let mut cap = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
+    cap.set(videoio::CAP_PROP_FRAME_WIDTH, 320.0)?;
+    cap.set(videoio::CAP_PROP_FRAME_HEIGHT, 240.0)?;
 
     if cap.is_opened()? == false {
         println!("{}", " Camera open failed!");
         std::process::exit(0);
     }
+  
 
-    let mut net = dnn::read_net_from_onnx(model)?;
+    let mut net = dnn::read_net_from_caffe(protext,&model)?;
     // let out_names = net.get_unconnected_out_layers_names().unwrap();
 
     println!("{:?}", net);
@@ -30,17 +33,17 @@ pub fn main() -> Result<()> {
    
         //카메라 또는 동영상 파일로 부터 다음 프레임을 받아와서 MAt클랙스 형식의 변수 이미지에 저장
         cap.read(&mut frame)?;
-        let mut umat: core::UMat  = core::UMat::new_def();
-        frame.copy_to(&mut umat)?;
+        // let mut frame: core::frame  = core::frame::new_def();
+        // frame.copy_to(&mut frame)?;
         if frame.empty() {
             println!("{}", "Net Open Failed");
             std::process::exit(0);
         }
 
         let blob = dnn::blob_from_image(
-            &umat,
+            &frame,
             1.0 / 255.0,
-            core::Size::from((640, 640)),
+            core::Size::from((300, 300)),
             core::Scalar::from((0., 0., 0., 0.)),
             true,
             false,
@@ -57,8 +60,8 @@ pub fn main() -> Result<()> {
         let mut scores: core::Vector<f32> = core::Vector::default();
         let mut indices: core::Vector<i32> = core::Vector::default();
         let mut class_index_list: core::Vector<i32> = core::Vector::default();
-        let x_scale = umat.cols() as f32 / 640f32;
-        let y_scale = umat.rows() as f32 / 640f32;
+        let x_scale = frame.cols() as f32 / 640f32;
+        let y_scale = frame.rows() as f32 / 640f32;
 
         for row in 0..rows {
             let mut vec: Vec<f32> = Vec::new();
@@ -68,7 +71,6 @@ pub fn main() -> Result<()> {
             for col in 0..cols {
                 let value: f32 = *res.at_3d::<f32>(0, col, row)?; // (1 x M x 8400)
                 if col > 3 {
-                    // the rest (after 4th) values are class scores
                     if value > max_score {
                         max_score = value;
                         max_index = col - 4;
@@ -123,7 +125,7 @@ pub fn main() -> Result<()> {
             if label == "0" {
                 let box_color = core::Scalar::from(((0.0, 255.0, 0.0))); // green color
                 opencv::imgproc::rectangle(
-                    &mut umat,
+                    &mut frame,
                     rect,
                     box_color,
                     2,
@@ -131,10 +133,10 @@ pub fn main() -> Result<()> {
                     0,
                 )
                 .unwrap();
-            } else if label == "bicycle" {
+            } else if label == "56" {
                 let box_color = core::Scalar::new(0.0, 165.0, 255.0, 0.0); // orange color
                 opencv::imgproc::rectangle(
-                    &mut umat,
+                    &mut frame,
                     rect,
                     box_color,
                     2,
@@ -144,7 +146,7 @@ pub fn main() -> Result<()> {
                 .unwrap();
             }
         }
-        highgui::imshow("frame", &umat)?;
+        highgui::imshow("frame", &frame)?;
         if highgui::wait_key(1)? == 27 {
             break;
         }

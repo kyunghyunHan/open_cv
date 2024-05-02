@@ -38,3 +38,8 @@ fn otsu_algorithm() -> Result<()> {
     // let t(,bin_img)= imgproc::threshold(&img, dst, thresh, maxval, typ)?;
     Ok(())
 }
+//컨볼루션 적용
+fn convolustion()->Result<()>{
+    let img = imgcodecs::imread("./face.jpg", imgcodecs::IMREAD_COLOR)?;
+    Ok(())
+}
