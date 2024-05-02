@@ -10,6 +10,8 @@ pub fn main() -> Result<()> {
     
     let model = "./yolov8n.onnx";
     let mut cap = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
+    cap.set(videoio::CAP_PROP_FRAME_WIDTH, 320.0)?;
+    cap.set(videoio::CAP_PROP_FRAME_HEIGHT, 240.0)?;
 
     if cap.is_opened()? == false {
         println!("{}", " Camera open failed!");
@@ -132,7 +134,7 @@ pub fn main() -> Result<()> {
                     0,
                 )
                 .unwrap();
-            } else if label == "bicycle" {
+            } else if label == "1" {
                 let box_color = core::Scalar::new(0.0, 165.0, 255.0, 0.0); // orange color
                 opencv::imgproc::rectangle(
                     &mut umat,
