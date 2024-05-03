@@ -8,10 +8,10 @@ use opencv::prelude::UMatTraitConst;
 pub fn main() -> Result<()> {
 
     
-    let model = "./yolov5su.onnx";
+    let model = "./dataset/best.onnx";
     let mut cap = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
-    cap.set(videoio::CAP_PROP_FRAME_WIDTH, 320.0)?;
-    cap.set(videoio::CAP_PROP_FRAME_HEIGHT, 240.0)?;
+    cap.set(videoio::CAP_PROP_FRAME_WIDTH, 160.0)?;
+    cap.set(videoio::CAP_PROP_FRAME_HEIGHT, 120.0)?;
 
     if cap.is_opened()? == false {
         println!("{}", " Camera open failed!");
@@ -21,7 +21,6 @@ pub fn main() -> Result<()> {
     println!("{:?}", 1);
     let mut net = dnn::read_net_from_onnx(model)?;
     
-    // let out_names = net.get_unconnected_out_layers_names().unwrap();
 
     println!("{:?}", 1);
     if net.empty()? {

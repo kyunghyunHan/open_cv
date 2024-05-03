@@ -33,7 +33,7 @@ mod deep_learning;
 mod yolo;
 
 pub fn main() {
-    yolo::main().unwrap()
+    cv_dl::main();
     // object_detection::main().unwrap();
     //test
 }

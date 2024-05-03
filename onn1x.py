@@ -1,7 +1,7 @@
 import torch
 from ultralytics import YOLO
 
-model = YOLO('./yolov5su.pt')
+model = YOLO('./best.pt')
 model.export(format="onnx")
 
 # # 간단한 예제 모델 정의
