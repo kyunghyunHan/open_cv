@@ -49,3 +49,13 @@ export PATH="/usr/local/opt/llvm/bin:$PATH"
 opt-level = 3
 
 ```
+
+## opencv install
+```
+brew list --versions
+brew -v update
+brew upgrade --force --display-times
+brew list --versions
+brew -v install --force --display-times opencv"$BREW_OPENCV_VERSION"
+brew link opencv"$BREW_OPENCV_VERSION"
+```

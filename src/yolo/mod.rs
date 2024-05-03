@@ -8,7 +8,7 @@ use opencv::prelude::UMatTraitConst;
 pub fn main() -> Result<()> {
 
     
-    let model = "./yolov8n.onnx";
+    let model = "./yolov5su.onnx";
     let mut cap = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
     cap.set(videoio::CAP_PROP_FRAME_WIDTH, 320.0)?;
     cap.set(videoio::CAP_PROP_FRAME_HEIGHT, 240.0)?;
@@ -18,11 +18,12 @@ pub fn main() -> Result<()> {
         std::process::exit(0);
     }
   
-
+    println!("{:?}", 1);
     let mut net = dnn::read_net_from_onnx(model)?;
+    
     // let out_names = net.get_unconnected_out_layers_names().unwrap();
 
-    println!("{:?}", net);
+    println!("{:?}", 1);
     if net.empty()? {
         println!("{}", "Net Open Failed");
         std::process::exit(0);
@@ -112,6 +113,7 @@ pub fn main() -> Result<()> {
 
             final_boxes.push(bbox);
         }
+        
         for i in 0..final_boxes.len() {
             let bbox: &_ = &final_boxes[i];
             let rect = core::Rect::new(
