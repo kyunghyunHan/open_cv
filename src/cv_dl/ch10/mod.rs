@@ -7,7 +7,12 @@ use opencv::{
 };
 use rand::Rng;
 use std::collections::HashMap;
+/*
+모션 분석
+dynamic image
+보통 카메라 = 초당 30장
 
+*/
 pub fn main() -> Result<()> {
     klt_algorithm()?;
     Ok(())
@@ -38,8 +43,6 @@ fn klt_algorithm() -> Result<()> {
     let mut old_gray = core::Mat::default();
     imgproc::cvt_color(&old_frame, &mut old_gray, imgproc::COLOR_BGR2GRAY, 0)?;
     let mut p0 = core::Mat::default();
-
-    println!("{:?}", p0);
     imgproc::good_features_to_track(
         &old_gray,
         &mut p0,
@@ -51,17 +54,18 @@ fn klt_algorithm() -> Result<()> {
         true,
         0.,
     )?;
-    println!("{:?}", p0);
 
-    let color: Vec<[u8; 3]> = (0..100)
+    let color: Vec<(u8,u8,u8)> = (0..100)
         .map(|_| {
-            [
+            (
                 rand::thread_rng().gen_range(0..=255),
                 rand::thread_rng().gen_range(0..=255),
                 rand::thread_rng().gen_range(0..=255),
-            ]
+            )
         })
         .collect();
+
+
     let mut mask: opencv::prelude::Mat = core::Mat::zeros_size(old_frame.size()?, 0)?.to_mat()?;
 
     loop {
@@ -108,9 +112,11 @@ fn klt_algorithm() -> Result<()> {
         core::extract_channel(&p0, &mut f0, 0)?;
 
         if !p1.empty() {
+            println!("{:?}",f1.size());
             // p1과 match를 이용하여 조건에 맞는 요소 선택
             for i in 0..f1.rows() {
                 let value = f1.at_2d::<f32>(i, 0)?;
+                println!("{}",value);
                 if value == &1. {
                     let row = p1.row(i).unwrap();
                     println!("{:?}", row);
@@ -125,7 +131,6 @@ fn klt_algorithm() -> Result<()> {
                 }
             }
         }
-
         for i in 0..good_new.size()?.width {
             println!("{}", 1);
 
@@ -139,5 +144,12 @@ fn klt_algorithm() -> Result<()> {
         highgui::wait_key(0)?;
     }
     highgui::destroy_all_windows()?;
+    Ok(())
+}
+
+
+fn farn_back() -> Result<()> {
+
+
     Ok(())
 }
