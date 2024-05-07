@@ -62,7 +62,7 @@ fn klt_algorithm() -> Result<()> {
             ]
         })
         .collect();
-    let mask: opencv::prelude::Mat = core::Mat::zeros_size(old_frame.size()?, 0)?.to_mat()?;
+    let mut mask: opencv::prelude::Mat = core::Mat::zeros_size(old_frame.size()?, 0)?.to_mat()?;
 
     loop {
         let mut frame = core::Mat::default();
@@ -100,33 +100,39 @@ fn klt_algorithm() -> Result<()> {
         )?;
         let mut good_new = core::Mat::default();
         let mut good_old = core::Mat::default();
-        good_new.typ();
-        let mut good_new_converted = core::Mat::default();
-        let mut good_old_converted = core::Mat::default();
-        
-        // good_new.convert_to(&mut good_new_converted, core::CV_32FC2)?;
-        // good_old.convert_to(&mut good_old_converted, core::CV_32FC2)?;
-        
-        println!("{:?}",p1);
+
+        let mut f1: opencv::prelude::Mat = core::Mat::default();
+        let mut f0: opencv::prelude::Mat = core::Mat::default();
+
+        core::extract_channel(&p1, &mut f1, 0)?;
+        core::extract_channel(&p0, &mut f0, 0)?;
+
         if !p1.empty() {
-            println!("{}",1);
             // p1과 match를 이용하여 조건에 맞는 요소 선택
-            for i in 0..p1.rows() {
-                let value = p1.at_2d::<f32>(i, 0)?;
-                println!("{}",value);
+            for i in 0..f1.rows() {
+                let value = f1.at_2d::<f32>(i, 0)?;
                 if value == &1. {
                     let row = p1.row(i).unwrap();
                     println!("{:?}", row);
                     good_new.push_back(&row).unwrap();
                 }
             }
-            for i in 0..p0.rows() {
-                let value = p0.at_2d::<f32>(i, 0)?;
+            for i in 0..f0.rows() {
+                let value = f0.at_2d::<f32>(i, 0)?;
                 if value == &1. {
                     let row = p1.row(i).unwrap();
                     good_old.push_back(&row).unwrap();
                 }
             }
+        }
+
+        for i in 0..good_new.size()?.width {
+            println!("{}", 1);
+
+            let (a,b)=( good_new.at_2d::<i32>(i, 0)?,good_new.at_2d::<i32>(i, 1)?);
+            let (c,d)=( good_old.at_2d::<i32>(i, 0)?,good_old.at_2d::<i32>(i, 1)?);
+             imgproc::line(&mut mask, core::Point_::from((*a,*b)), core::Point_::from((*c,*d)), core::Scalar::from((0,0,255)), 2, imgproc::LINE_AA,0)?;
+             imgproc::circle(&mut frame, core::Point_::from((*a,*b)), 5, core::Scalar::from((0,0,255)), 2, imgproc::LINE_AA, 0)?;
         }
 
         highgui::imshow("LTK tracker", &frame)?;
