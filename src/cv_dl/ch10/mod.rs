@@ -1,26 +1,20 @@
 use opencv::{
     core::{self, no_array, MatExprTraitConst, MatTraitConst},
-    dnn, highgui, imgcodecs, imgproc,
-    prelude::MatTrait,
-    prelude::VideoCaptureTrait,
-    quality, video, videoio, Result,
+    highgui, imgproc,
+    prelude::{MatTrait, VideoCaptureTrait},
+    video, videoio, Result,
 };
 use rand::Rng;
 use std::collections::HashMap;
-/*
-모션 분석
-dynamic image
-보통 카메라 = 초당 30장
 
-*/
 pub fn main() -> Result<()> {
     klt_algorithm()?;
     Ok(())
 }
-/*추적 */
+
 fn klt_algorithm() -> Result<()> {
     let mut cap =
-        videoio::VideoCapture::from_file("./video/slow_traffic_small.mp4", videoio::CAP_FFMPEG)?;
+        videoio::VideoCapture::from_file("./video/slow_traffic_small.mp4", videoio::CAP_ANY)?;
     let mut feature_params: HashMap<&str, i32> = HashMap::new();
 
     // 키-값 쌍 추가
@@ -46,27 +40,16 @@ fn klt_algorithm() -> Result<()> {
     imgproc::good_features_to_track(
         &old_gray,
         &mut p0,
-        *feature_params.get("maxCorners").unwrap(),
+        100,
         0.3,
-        *feature_params.get("minDistance").unwrap() as f64,
+        7.,
         &no_array(),
-        *feature_params.get("blockSize").unwrap(),
-        true,
+        7,
+        false,
         0.,
     )?;
 
-    let color: Vec<(u8,u8,u8)> = (0..100)
-        .map(|_| {
-            (
-                rand::thread_rng().gen_range(0..=255),
-                rand::thread_rng().gen_range(0..=255),
-                rand::thread_rng().gen_range(0..=255),
-            )
-        })
-        .collect();
-
-
-    let mut mask: opencv::prelude::Mat = core::Mat::zeros_size(old_frame.size()?, 0)?.to_mat()?;
+    let mut mask = core::Mat::zeros_size(old_frame.size()?, core::CV_8UC3)?.to_mat()?;
 
     loop {
         let mut frame = core::Mat::default();
@@ -82,9 +65,9 @@ fn klt_algorithm() -> Result<()> {
 
         let mut p1 = core::Mat::default();
         let mut status = core::Mat::default();
-
         let mut err = core::Mat::default();
-
+        println!("{:?}",old_gray);
+        println!("{:?}",new_gray);
         video::calc_optical_flow_pyr_lk(
             &old_gray,
             &new_gray,
@@ -99,57 +82,64 @@ fn klt_algorithm() -> Result<()> {
                 max_count: 10,
                 epsilon: 0.03,
             }),
-            1,
+            core::CV_32F,
             1.,
         )?;
+        println!("{}",11);
+
         let mut good_new = core::Mat::default();
         let mut good_old = core::Mat::default();
 
-        let mut f1: opencv::prelude::Mat = core::Mat::default();
-        let mut f0: opencv::prelude::Mat = core::Mat::default();
-
-        core::extract_channel(&p1, &mut f1, 0)?;
-        core::extract_channel(&p0, &mut f0, 0)?;
-
-        if !p1.empty() {
-            println!("{:?}",f1.size());
-            // p1과 match를 이용하여 조건에 맞는 요소 선택
-            for i in 0..f1.rows() {
-                let value = f1.at_2d::<f32>(i, 0)?;
-                println!("{}",value);
-                if value == &1. {
-                    let row = p1.row(i).unwrap();
-                    println!("{:?}", row);
-                    good_new.push_back(&row).unwrap();
-                }
-            }
-            for i in 0..f0.rows() {
-                let value = f0.at_2d::<f32>(i, 0)?;
-                if value == &1. {
-                    let row = p1.row(i).unwrap();
-                    good_old.push_back(&row).unwrap();
-                }
+        for i in 0..p1.rows() {
+            let value = *status.at_2d::<u8>(i, 0)?;
+            if value == 1 {
+                let row = p1.row(i)?;
+                good_new.push_back(&row)?;
+                let row_old = p0.row(i)?;
+                good_old.push_back(&row_old)?;
             }
         }
+  
         for i in 0..good_new.size()?.width {
-            println!("{}", 1);
-
-            let (a,b)=( good_new.at_2d::<i32>(i, 0)?,good_new.at_2d::<i32>(i, 1)?);
-            let (c,d)=( good_old.at_2d::<i32>(i, 0)?,good_old.at_2d::<i32>(i, 1)?);
-             imgproc::line(&mut mask, core::Point_::from((*a,*b)), core::Point_::from((*c,*d)), core::Scalar::from((0,0,255)), 2, imgproc::LINE_AA,0)?;
-             imgproc::circle(&mut frame, core::Point_::from((*a,*b)), 5, core::Scalar::from((0,0,255)), 2, imgproc::LINE_AA, 0)?;
+            let (a, b) = (good_new.at_2d::<i32>(i, 0)?, good_new.at_2d::<i32>(i, 1)?);
+            let (c, d) = (good_old.at_2d::<i32>(i, 0)?, good_old.at_2d::<i32>(i, 1)?);
+            imgproc::line(
+                &mut mask,
+                core::Point_::from((*a, *b)),
+                core::Point_::from((*c, *d)),
+                core::Scalar::from((0, 0, 255)),
+                2,
+                imgproc::LINE_AA,
+                0,
+            )?;
+            imgproc::circle(
+                &mut frame,
+                core::Point_::from((*a, *b)),
+                5,
+                core::Scalar::from((0, 0, 255)),
+                -1,
+                imgproc::LINE_AA,
+                0,
+            )?;
         }
+  
+        let mut img = core::Mat::default();
+        core::add(&frame, &mask, &mut img, &no_array(), 1)?;
+        highgui::imshow("LTK tracker", &img)?;
+        highgui::wait_key(30)?;
+        new_gray.copy_to(&mut old_gray)?;
+        println!("{}",11);
 
-        highgui::imshow("LTK tracker", &frame)?;
-        highgui::wait_key(0)?;
+
+        good_new.copy_to(&mut p0)?;
+        println!("{}",11);
+
     }
+
     highgui::destroy_all_windows()?;
     Ok(())
 }
 
-
 fn farn_back() -> Result<()> {
-
-
     Ok(())
 }
