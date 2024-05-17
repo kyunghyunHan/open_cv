@@ -31,8 +31,9 @@ mod utils;
 mod video;
 mod deep_learning;
 mod yolo;
+mod yolo_image;
 
 pub fn main() {
-yolo::main().unwrap();
+    yolo_image::main().unwrap();
   
 }

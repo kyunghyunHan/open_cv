@@ -8,7 +8,7 @@ use opencv::prelude::UMatTraitConst;
 pub fn main() -> Result<()> {
 
     
-    let model = "./dataset/yolov8n.onnx";
+    let model = "./best.onnx";
     let mut cap = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
     cap.set(videoio::CAP_PROP_FRAME_WIDTH, 160.0)?;
     cap.set(videoio::CAP_PROP_FRAME_HEIGHT, 120.0)?;
