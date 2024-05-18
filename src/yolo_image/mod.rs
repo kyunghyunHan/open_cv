@@ -9,7 +9,7 @@ use opencv::{core, dnn, highgui, imgcodecs, imgproc, types, videoio, Result};
 pub fn main() -> Result<()> {
     let model = "./dataset/best.onnx";
     let image_path = "./img/test.jpg"; //이미지 경로
-
+     
     let mut frame = imgcodecs::imread(&image_path, imgcodecs::IMREAD_COLOR)?;
 
     let mut net = dnn::read_net_from_onnx(model)?;
@@ -28,6 +28,7 @@ pub fn main() -> Result<()> {
 
     let mut umat: core::UMat  = core::UMat::new_def();
     frame.copy_to(&mut umat)?;
+    println!("{:?}",umat);
     let blob = dnn::blob_from_image(
         &umat,
         1.0 / 255.0,
@@ -127,7 +128,7 @@ pub fn main() -> Result<()> {
     highgui::named_window("frame", highgui::WINDOW_OPENGL)?;
     highgui::imshow("frame", &umat)?;
     highgui::wait_key(0)?;
-
+    
 
     Ok(())
 }
