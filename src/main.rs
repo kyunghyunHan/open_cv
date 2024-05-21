@@ -32,8 +32,8 @@ mod video;
 mod deep_learning;
 mod yolo;
 mod yolo_image;
-
+mod resnet_image;
 pub fn main() {
-    yolo_image::main().unwrap();
+    resnet_image::main().unwrap();
   
 }
