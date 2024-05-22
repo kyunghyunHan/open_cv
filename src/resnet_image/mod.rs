@@ -7,7 +7,7 @@ use opencv::{
 pub fn main() -> Result<()> {
     let model = "./dataset/model.onnx";
     let image_path = "./img/food5.jpeg"; //이미지 경로
-    let mut frame = imgcodecs::imread(&image_path, imgcodecs::IMREAD_COLOR)?;
+    let frame = imgcodecs::imread(&image_path, imgcodecs::IMREAD_COLOR)?;
     let mut net = dnn::read_net_from_onnx(model)?;
     if net.empty()? {
         println!("{}", "Net Open Failed");
@@ -35,11 +35,9 @@ pub fn main() -> Result<()> {
     net.set_input(&blob, "", 1.0, core::Scalar::default())?;
     net.forward(&mut net_output, &out_layer_names)?;
     let res = net_output.get(0)?;
-    println!("Output matrix dimensions: {:?}", res.mat_size());
 
-    let rows = *res.mat_size().get(1).unwrap(); // 8400
-    let cols = *res.mat_size().get(0).unwrap(); // M
-    println!("{}{}",rows,cols);
+    let rows = *res.mat_size().get(1).unwrap(); 
+    let cols = *res.mat_size().get(0).unwrap(); 
     let mut max_class_idx = 0; // 최대 확률을 가진 클래스의 인덱스를 저장합니다.
     let mut max_probability = 0.0; // 최대 확률을 저장합니다.
     
@@ -50,10 +48,7 @@ pub fn main() -> Result<()> {
             max_class_idx = class_idx; // 최대 확률을 가진 클래스의 인덱스를 업데이트합니다.
         }
     }
-    
-    
     println!("Highest probability class: Q{}", max_class_idx + 1); // 가장 높은 확률을 가진 클래스를 출력합니다.
-    println!("Probability: {}", max_probability); // 해당 클래스의 확률을 출력합니다.
-    
+    println!("Probability: {}", max_probability); // 해당 클래스의 확률을 출력합니다
     Ok(())
 }

@@ -33,7 +33,8 @@ mod deep_learning;
 mod yolo;
 mod yolo_image;
 mod resnet_image;
+mod web_cam_streaming_server;
 pub fn main() {
-    resnet_image::main().unwrap();
+    web_cam_streaming_server::main().unwrap();
   
 }
