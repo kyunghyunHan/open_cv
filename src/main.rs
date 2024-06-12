@@ -34,7 +34,9 @@ mod yolo;
 mod yolo_image;
 mod resnet_image;
 mod web_cam_streaming_server;
+mod tracker;
 pub fn main() {
-    web_cam_streaming_server::main().unwrap();
+    // web_cam_streaming_server::main().unwrap();
+    tracker::main().unwrap();
   
 }

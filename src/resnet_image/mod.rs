@@ -34,7 +34,7 @@ pub fn main() -> Result<()> {
     let mut net_output: core::Vector<core::Mat> = core::Vector::new();
     net.set_input(&blob, "", 1.0, core::Scalar::default())?;
     net.forward(&mut net_output, &out_layer_names)?;
-    let res = net_output.get(0)?;
+    let res: opencv::prelude::Mat = net_output.get(0)?;
 
     let rows = *res.mat_size().get(1).unwrap(); 
     let cols = *res.mat_size().get(0).unwrap(); 
