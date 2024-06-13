@@ -6,14 +6,9 @@ use opencv::{core, highgui, prelude::*, videoio, Result};
 pub fn main() -> Result<()> {
     let window = "video capture";
     highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
-    // opencv::opencv_branch_32! {
-    //     let mut cam = videoio::VideoCapture::new_default(0)?; // 0 is the default camera
-    // }
-    // opencv::not_opencv_branch_32! {
-    //     let mut cam = videoio::VideoCapture::new(0, videoio::CAP_ANY)?; // 0 is the default camera
-    // }
+ 
     let mut cam =
-        videoio::VideoCapture::from_file("./video/slow_traffic_small.mp4", videoio::CAP_FFMPEG)?; // 0 is the default camera
+        videoio::VideoCapture::from_file("./video/human.mp4", videoio::CAP_FFMPEG)?; // 0 is the default camera
 
     let opened = videoio::VideoCapture::is_opened(&cam)?;
     if !opened {
@@ -23,7 +18,7 @@ pub fn main() -> Result<()> {
     let mut param: opencv::tracking::TrackerKCF_Params =
         opencv::tracking::TrackerKCF_Params::default()?;
 
-    let mut t = <TrackerKCF>::create(param)?;
+    let mut t = TrackerKCF::create(param)?;
     //let mut bounding_box = opencv::core::Rect::new(100, 100, 50, 50);
     let mut count: i32 = 0;
     let mut m = opencv::core::Mat::default();
