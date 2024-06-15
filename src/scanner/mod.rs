@@ -7,7 +7,11 @@ pub fn main() -> Result<()> {
     let img_result = Mat::default();
     let img_gray = Mat::default();
 
-    let img_input =  imread("scan.jpg", 1)?;
+    let img_input =  imread("scan.jpg", 1)?; 
+    let frame = Mat::default();
+    // loop {
+        
+    // }
     
     Ok(())
 }
