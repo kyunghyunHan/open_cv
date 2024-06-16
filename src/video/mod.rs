@@ -1,3 +1,5 @@
+use crate::image::imgshow;
+use opencv::core::{hconcat, Vector};
 use opencv::videoio::{VideoCapture, CAP_ANY, CAP_DSHOW, CAP_PROP_FPS};
 use opencv::{
     core::{no_array, Size_},
@@ -7,8 +9,6 @@ use opencv::{
     videoio::{self, CAP_PROP_FRAME_COUNT, CAP_PROP_FRAME_HEIGHT, CAP_PROP_FRAME_WIDTH},
     Result,
 };
-use opencv::core::hconcat;
-use crate::image::imgshow;
 /*Video Capture */
 pub fn main() -> Result<()> {
     // video_capture()?;
@@ -190,21 +190,19 @@ pub fn video_writer() -> Result<()> {
     Ok(())
 }
 
-
-
 pub fn video_add_capture() -> Result<()> {
     let mut cap = VideoCapture::new(0, CAP_ANY)?;
 
     if !cap.is_opened()? {
-        println!("Camera is not opened");
+        println!("카메라가 열리지 않았습니다");
         std::process::exit(0);
     }
-    let mut frames = Vec::new();
+    let mut frames: Vector<Mat> = Vector::new();
 
     loop {
         let mut frame = Mat::default();
         cap.read(&mut frame)?;
-        highgui::imshow("Video display", &frame)?;
+        highgui::imshow("비디오 디스플레이", &frame)?;
         let key = highgui::wait_key(1)?;
         if key as u8 as char == 'c' {
             frames.push(frame);
@@ -212,21 +210,18 @@ pub fn video_add_capture() -> Result<()> {
             break;
         }
     }
-    println!("{}",frames.len());
     cap.release()?;
     highgui::destroy_all_windows()?;
 
     if frames.len() > 0 {
-        let mut concatenated_img = frames[0].clone();
-        for i in 1..frames.len().min(3) {
-            println!("{}",1);
-
-            let mut temp_img = Mat::default();
-            let imgs = vec![&concatenated_img, &frames[i]];
-            hconcat(&imgs[0], &mut temp_img)?;
-            concatenated_img = temp_img;
+        let mut imgs:Vector<Mat> = Vector::new();
+        for i in 0..frames.len().min(3) {
+            imgs.push(frames.get(i)?.clone());
         }
-        highgui::imshow("Concatenated Image", &concatenated_img)?;
+        let mut concatenated_image = Mat::default();
+        hconcat(&imgs, &mut concatenated_image)?;
+
+        highgui::imshow("병합된 이미지", &concatenated_image)?;
         highgui::wait_key(0)?;
     }
     Ok(())
