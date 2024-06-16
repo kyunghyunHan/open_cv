@@ -38,7 +38,8 @@ mod tracker;
 mod window_capture;
 mod scanner;
 pub fn main() {
-    scanner::main();
+    video::main();
+    // scanner::main();
     // web_cam_streaming_server::main().unwrap();
     // tracker::main().unwrap();
 

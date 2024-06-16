@@ -1,19 +1,18 @@
-use opencv::videoio::CAP_PROP_FPS;
+use opencv::videoio::{VideoCapture, CAP_ANY, CAP_DSHOW, CAP_PROP_FPS};
 use opencv::{
-    
-    core::{no_array,Size_},
+    core::{no_array, Size_},
     highgui::{self, destroy_all_windows},
+    imgproc,
     prelude::*,
-    videoio::{self, CAP_PROP_FRAME_HEIGHT, CAP_PROP_FRAME_WIDTH,CAP_PROP_FRAME_COUNT},
+    videoio::{self, CAP_PROP_FRAME_COUNT, CAP_PROP_FRAME_HEIGHT, CAP_PROP_FRAME_WIDTH},
     Result,
-	imgproc,
-	
-    
 };
+use opencv::core::hconcat;
+use crate::image::imgshow;
 /*Video Capture */
-pub fn main()-> Result<()> {
+pub fn main() -> Result<()> {
     // video_capture()?;
-    video_writer()?;
+    video_add_capture()?;
     Ok(())
 }
 pub fn video_capture() -> Result<()> {
@@ -98,8 +97,6 @@ pub fn video_capture() -> Result<()> {
     Ok(())
 }
 
-
-
 pub fn video_in() -> Result<()> {
     let window = "video capture";
     highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
@@ -108,23 +105,23 @@ pub fn video_in() -> Result<()> {
     if !opened {
         panic!("Unable to open default capera!");
     }
-    println!("{}",cap.get(CAP_PROP_FRAME_WIDTH)?.round());
-    println!("{}",cap.get(CAP_PROP_FRAME_HEIGHT)?.round());
-    println!("{}",cap.get(CAP_PROP_FRAME_COUNT)?.round());
+    println!("{}", cap.get(CAP_PROP_FRAME_WIDTH)?.round());
+    println!("{}", cap.get(CAP_PROP_FRAME_HEIGHT)?.round());
+    println!("{}", cap.get(CAP_PROP_FRAME_COUNT)?.round());
 
     let fps = cap.get(CAP_PROP_FPS)?;
-    println!("FPS:{}",fps);
-    let delay=(1000.0/fps);
+    println!("FPS:{}", fps);
+    let delay = (1000.0 / fps);
     loop {
         let mut frame = Mat::default();
-        if frame.empty(){
+        if frame.empty() {
             break;
         }
         cap.read(&mut frame)?;
 
         let mut imversed = Mat::default();
-        let  mask = Mat::default(); //
-		opencv::core::bitwise_not(&frame, &mut imversed, &mask)?;
+        let mask = Mat::default(); //
+        opencv::core::bitwise_not(&frame, &mut imversed, &mask)?;
         if frame.size()?.width > 0 {
             highgui::imshow(window, &frame)?;
         }
@@ -135,19 +132,19 @@ pub fn video_in() -> Result<()> {
     }
     Ok(())
 }
-pub fn video_writer()->Result<()>{
-    let mut cap= videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
+pub fn video_writer() -> Result<()> {
+    let mut cap = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
     let opened = videoio::VideoCapture::is_opened(&cap)?;
-	//사용 가능한 상태로 열렸는지 확인
-	if !opened {
-		panic!("Unable to open default camera!");
-	}
-    
-    let w= cap.get(CAP_PROP_FRAME_WIDTH)? as i32;
-    let h= cap.get(CAP_PROP_FRAME_HEIGHT)? as i32;
-    let fps= cap.get(CAP_PROP_FPS)?;
+    //사용 가능한 상태로 열렸는지 확인
+    if !opened {
+        panic!("Unable to open default camera!");
+    }
+
+    let w = cap.get(CAP_PROP_FRAME_WIDTH)? as i32;
+    let h = cap.get(CAP_PROP_FRAME_HEIGHT)? as i32;
+    let fps = cap.get(CAP_PROP_FPS)?;
     /*
-    
+
     DIVX :DIVX코덱
     XVID MPEG-4코덱
     WMV2:windows Media Video 8코덱
@@ -156,42 +153,81 @@ pub fn video_writer()->Result<()>{
     X264 H.264코덱
     AVC1: Advanced Video코덱
 
-    
-    
+
+
      */
     // let fourcc= videoio::VideoWriter::fourcc('D', 'I', 'V', 'x')?;
     let fourcc = videoio::VideoWriter::fourcc('D', 'I', 'V', 'X')?;
 
-    let delay = (1000.0/fps);
-   //타입에러 왁인 코닥
-   /*Wait key를 눌러야 저장이됨 */
-    let mut output_vedio = videoio::VideoWriter::new("output.mp4", fourcc, fps, Size_::new(w, h), true)?;
+    let delay = (1000.0 / fps);
+    //타입에러 왁인 코닥
+    /*Wait key를 눌러야 저장이됨 */
+    let mut output_vedio =
+        videoio::VideoWriter::new("output.mp4", fourcc, fps, Size_::new(w, h), true)?;
 
-    
-	//사용 가능한 상태로 열렸는지 확인
-	if !output_vedio.is_opened()? {
-		panic!("Unable to open default camera!");
-	}
-    
+    //사용 가능한 상태로 열렸는지 확인
+    if !output_vedio.is_opened()? {
+        panic!("Unable to open default camera!");
+    }
 
-    loop{
-        let mut frame =Mat::default();
+    loop {
+        let mut frame = Mat::default();
         cap.read(&mut frame)?;
-        if frame.empty(){
+        if frame.empty() {
             break;
         }
-        let mut  inversed = Mat::default();
+        let mut inversed = Mat::default();
         opencv::core::bitwise_not(&frame, &mut inversed, &no_array())?;
-		highgui::imshow("frame",&frame)?;
-		highgui::imshow("inversed",&inversed)?;
+        highgui::imshow("frame", &frame)?;
+        highgui::imshow("inversed", &inversed)?;
         output_vedio.write(&inversed)?;
-         let key = highgui::wait_key(delay as i32)?;
-         if key ==27 {
-             break;
-         }
-          
-          
+        let key = highgui::wait_key(delay as i32)?;
+        if key == 27 {
+            break;
+        }
     }
     destroy_all_windows()?;
+    Ok(())
+}
+
+
+
+pub fn video_add_capture() -> Result<()> {
+    let mut cap = VideoCapture::new(0, CAP_ANY)?;
+
+    if !cap.is_opened()? {
+        println!("Camera is not opened");
+        std::process::exit(0);
+    }
+    let mut frames = Vec::new();
+
+    loop {
+        let mut frame = Mat::default();
+        cap.read(&mut frame)?;
+        highgui::imshow("Video display", &frame)?;
+        let key = highgui::wait_key(1)?;
+        if key as u8 as char == 'c' {
+            frames.push(frame);
+        } else if key as u8 as char == 'q' {
+            break;
+        }
+    }
+    println!("{}",frames.len());
+    cap.release()?;
+    highgui::destroy_all_windows()?;
+
+    if frames.len() > 0 {
+        let mut concatenated_img = frames[0].clone();
+        for i in 1..frames.len().min(3) {
+            println!("{}",1);
+
+            let mut temp_img = Mat::default();
+            let imgs = vec![&concatenated_img, &frames[i]];
+            hconcat(&imgs[0], &mut temp_img)?;
+            concatenated_img = temp_img;
+        }
+        highgui::imshow("Concatenated Image", &concatenated_img)?;
+        highgui::wait_key(0)?;
+    }
     Ok(())
 }
