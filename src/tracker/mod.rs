@@ -19,9 +19,7 @@ pub fn main() -> Result<()> {
         opencv::tracking::TrackerKCF_Params::default()?;
 
     let mut t = TrackerKCF::create(param)?;
-    //let mut bounding_box = opencv::core::Rect::new(100, 100, 50, 50);
-    let mut count: i32 = 0;
-    let mut m = opencv::core::Mat::default();
+
 
     let mut frame = Mat::default();
     cam.read(&mut frame)?;
