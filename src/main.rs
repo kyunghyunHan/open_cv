@@ -38,7 +38,7 @@ mod tracker;
 mod window_capture;
 mod scanner;
 pub fn main() {
-    video::main();
+    video::main().unwrap();
   
 
 
