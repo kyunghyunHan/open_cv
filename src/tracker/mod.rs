@@ -44,7 +44,6 @@ pub fn main() -> Result<()> {
             0,
         )?;
 
-        // show image with the tracked object
         highgui::imshow(window, &mut frame)?;
 
         //			highgui::imshow(window, &mut frame)?;
