@@ -1,5 +1,3 @@
-use std::any::Any;
-
 use opencv::core::{MatExprTraitConst, MatTrait, Scalar, Size, Vector, CV_8UC1, CV_8UC3, DECOMP_LU};
 use opencv::{
     core::{
@@ -133,7 +131,7 @@ pub fn main() -> Result<()> {
         }
     }
     mat_op4()?;
-    mat_op6()?;
+    // mat_op6()?;
     /*Matiterator_ */
     Ok(())
 }
