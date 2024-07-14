@@ -15,7 +15,6 @@ pub fn main() -> Result<()> {
     let img2 = img1.roi(rect)?;
     imshow("./aa", &img2)?;
     wait_key(0)?;
-    println!("{}", 1);
 
     Ok(())
 }
