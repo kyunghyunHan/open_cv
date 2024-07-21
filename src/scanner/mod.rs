@@ -9,10 +9,7 @@ pub fn main() -> Result<()> {
 
     let img_input =  imread("scan.jpg", 1)?; 
     let frame = Mat::default();
-    // loop {
-        
-    // }
-    
+  
     Ok(())
 }
 fn roi(){
