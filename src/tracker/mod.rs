@@ -4,8 +4,8 @@ use opencv::video::TrackerTrait;
 use opencv::{core, highgui, prelude::*, videoio, Result};
 
 pub fn main() -> Result<()> {
-    let window = "video capture";
-    highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
+    // let window = "video capture";
+    // highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
  
     let mut cam =
         videoio::VideoCapture::from_file("./video/human.mp4", videoio::CAP_FFMPEG)?; // 0 is the default camera
@@ -27,7 +27,7 @@ pub fn main() -> Result<()> {
 
     t.init(&mut frame, bounding_box)?;
 
-    println!("Start the tracking process, press ESC to quit.\n");
+   
     loop {
         cam.read(&mut frame)?;
         if frame.rows() == 0 || frame.cols() == 0{
@@ -44,7 +44,7 @@ pub fn main() -> Result<()> {
             0,
         )?;
 
-        highgui::imshow(window, &mut frame)?;
+        highgui::imshow("1", &mut frame)?;
 
         //			highgui::imshow(window, &mut frame)?;
         let key = highgui::wait_key(10)?;
