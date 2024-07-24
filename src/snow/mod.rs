@@ -3,7 +3,7 @@ use opencv::face::Facemark;
 pub fn main() -> Result<()> {
     let window = "video capture";
     highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
-    let mut cam = videoio::VideoCapture::from_file("girl.mp4", 0)?;
+    let mut cam = videoio::VideoCapture::from_file("./video/girl.mp4", 0)?;
     let opened = videoio::VideoCapture::is_opened(&cam)?;
     if !opened {
         panic!("Unable to open default camera!");

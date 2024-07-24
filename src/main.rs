@@ -38,6 +38,7 @@ mod web_cam_streaming_server;
 mod window_capture;
 mod yolo;
 mod yolo_image;
+mod face_mark;
 pub fn main() {
     /*tracker */
     // tracker::main().unwrap();
@@ -50,5 +51,8 @@ pub fn main() {
     // mat_op::main().unwrap();
 
     /*google_net*/
-    google_net::main().unwrap();
+    // google_net::main().unwrap();
+
+    /*face_mark  */
+    face_mark::main().unwrap();
 }
