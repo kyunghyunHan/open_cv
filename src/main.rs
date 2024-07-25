@@ -39,9 +39,10 @@ mod window_capture;
 mod yolo;
 mod yolo_image;
 mod face_mark;
+mod video_features;
 pub fn main() {
     /*tracker */
-    tracker::main().unwrap();
+    // tracker::main().unwrap();
     
     /* */
     // ssd_face_detector::main().unwrap();
@@ -55,4 +56,7 @@ pub fn main() {
 
     /*face_mark  */
     // face_mark::main().unwrap();
+
+    /*video features */
+    video_features::main().unwrap()
 }
