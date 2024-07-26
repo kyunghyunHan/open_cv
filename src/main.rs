@@ -1,3 +1,5 @@
+use opencv::objdetect::CascadeClassifier;
+
 mod affine;
 mod binarization;
 mod brihtness;
@@ -27,8 +29,6 @@ mod perspective;
 mod qr_code;
 mod resnet_image;
 mod scanner;
-mod snow;
-mod ssd_face_detector;
 mod storage;
 mod torch;
 mod tracker;
@@ -58,6 +58,7 @@ pub fn main() {
     // face_mark::main().unwrap();
 
     /*video features */
-    video_features::main().unwrap()
+    // video_features::main().unwrap()
     // ssd_face_detector::main().unwrap();
+    face_mark::main().unwrap();
 }

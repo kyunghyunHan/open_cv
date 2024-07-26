@@ -1,6 +1,9 @@
-use opencv::{highgui, prelude::*, videoio, Result};
-use opencv::face::Facemark;
+use opencv::{face::FacemarkLBF, highgui, objdetect::CascadeClassifier, prelude::*, videoio, Result};
 pub fn main() -> Result<()> {
+
+    let face_detector:CascadeClassifier = CascadeClassifier::new("haarcascade_frontalface_alt2.xml").unwrap();
+    let mut facemark = FacemarkLBF::create_def().unwrap();
+    facemark.load_model("./dataset/lbfmodel.yaml").unwrap();
     let window = "video capture";
     highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
     let mut cam = videoio::VideoCapture::from_file("./video/girl.mp4", 0)?;
