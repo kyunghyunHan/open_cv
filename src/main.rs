@@ -58,5 +58,6 @@ pub fn main() {
     // face_mark::main().unwrap();
 
     /*video features */
-    video_features::main().unwrap()
+    // video_features::main().unwrap()
+    ssd_face_detector::main().unwrap();
 }
