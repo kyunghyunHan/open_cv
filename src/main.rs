@@ -42,7 +42,7 @@ mod face_mark;
 mod video_features;
 pub fn main() {
     /*tracker */
-    tracker::main().unwrap();
+    // tracker::main().unwrap();
     
     /* */
     // ssd_face_detector::main().unwrap();
@@ -55,7 +55,7 @@ pub fn main() {
     // google_net::main().unwrap();
 
     /*face_mark  */
-    // face_mark::main().unwrap();
+    face_mark::main().unwrap();
 
     /*video features */
     // video_features::main().unwrap()
