@@ -1,12 +1,13 @@
 use opencv::{
-    core::{Point, Point2f, Point_, Rect, Scalar, Size_, Vector},
+    core::{Point, Point2f, Rect, Scalar, Size_, Vector},
     face::FacemarkLBF,
     highgui,
-    imgproc::{circle, cvt_color, polylines, COLOR_BGR2GRAY,LINE_8},
+    imgproc::{circle, cvt_color, polylines, COLOR_BGR2GRAY, LINE_8},
     objdetect::CascadeClassifier,
     prelude::*,
     videoio, Result,
 };
+
 pub fn main() -> Result<()> {
     let mut face_detector: CascadeClassifier =
         CascadeClassifier::new("./dataset/haarcascade_frontalface_alt2.xml").unwrap();
@@ -14,10 +15,10 @@ pub fn main() -> Result<()> {
     facemark.load_model("./dataset/lbfmodel.yaml").unwrap();
     let window = "video capture";
     highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
-    let mut cam = videoio::VideoCapture::from_file("./video/girl.mp4", 0)?;
+    let mut cam: videoio::VideoCapture = videoio::VideoCapture::from_file("./video/smile1.mov", 0)?;
     let opened = videoio::VideoCapture::is_opened(&cam)?;
     if !opened {
-        panic!("Unable to open default camera!");
+        panic!("Unable to open video file!");
     }
     loop {
         let mut frame = Mat::default();
@@ -32,21 +33,30 @@ pub fn main() -> Result<()> {
             .detect_multi_scale(
                 &mut gray,
                 &mut faces,
-                1.1,
-                0,
+                1.2,
+                3,
                 0,
                 Size_::default(),
                 Size_::default(),
             )
             .unwrap();
+        
+        if faces.len() > 0 {
+            println!("Faces detected: {}", faces.len());
+        }
+
         let mut landmarks: Vector<Vector<Point2f>> = Vector::default();
         let success: bool = facemark.fit(&mut frame, &faces, &mut landmarks).unwrap();
 
         if success {
+            println!("Landmarks detected for {} faces", landmarks.len());
             for i in 0..landmarks.len() {
-                println!("{}", 1);
+                println!("{:?}", &landmarks.get(i).unwrap());
+                draw_landmarks(&mut frame, &landmarks.get(i).unwrap()).unwrap();
             }
         }
+
+        highgui::imshow(window, &frame)?; // 프레임을 업데이트하여 그린 랜드마크를 표시
         let key = highgui::wait_key(10)?;
         if key > 0 && key != 255 {
             break;
@@ -54,45 +64,52 @@ pub fn main() -> Result<()> {
     }
     Ok(())
 }
+
 fn draw_polyline(
     im: &mut Mat,
-    landmarks: &Vector<Point>,
+    landmarks: &Vector<Point2f>,
     start: i32,
     end: i32,
     is_closed: bool,
 ) -> opencv::Result<()> {
-    let points: Vector<Point> = landmarks.get(2).unwrap();
+    let mut points: Vector<Point> = Vector::new();
+    for i in start..=end {
+        let point = landmarks.get(i as usize).unwrap();
+        points.push(Point::new(point.x.round() as i32, point.y.round() as i32)); // 좌표를 반올림하여 정수형으로 변환
+    }
+
     polylines(
         im,
         &points,
         is_closed,
         Scalar::from((0, 0, 255)),
-        2,
+        1,
         LINE_8,
         0,
     )?;
     Ok(())
 }
-fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point>) -> opencv::Result<()> {
-    if landmarks.len() == 68 {
-        // draw_polyline(im, &landmarks, 0, 16, false)?;   // Jaw line
-        // draw_polyline(im, &landmarks, 17, 21, false)?;  // Left eyebrow
-        // draw_polyline(im, &landmarks, 22, 26, false)?;  // Right eyebrow
-        // draw_polyline(im, &landmarks, 27, 30, false)?;  // Nose bridge
-        // draw_polyline(im, &landmarks, 30, 35, true)?;   // Lower nose
-        // draw_polyline(im, &landmarks, 36, 41, true)?;   // Left eye
-        // draw_polyline(im, &landmarks, 42, 47, true)?;   // Right eye
-        // draw_polyline(im, &landmarks, 48, 59, true)?;   // Outer lip
-        // draw_polyline(im, &landmarks, 60, 67, true)?;   // Inner lip
+
+fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>) -> opencv::Result<()> {
+    if landmarks.len() != 68 {
+        println!("Drawing landmarks with 68 points");
+        draw_polyline(im, &landmarks, 0, 16, false)?;   // Jaw line
+        draw_polyline(im, &landmarks, 17, 21, false)?;  // Left eyebrow
+        draw_polyline(im, &landmarks, 22, 26, false)?;  // Right eyebrow
+        draw_polyline(im, &landmarks, 27, 30, false)?;  // Nose bridge
+        draw_polyline(im, &landmarks, 30, 35, true)?;   // Lower nose
+        draw_polyline(im, &landmarks, 36, 41, true)?;   // Left eye
+        draw_polyline(im, &landmarks, 42, 47, true)?;   // Right eye
+        draw_polyline(im, &landmarks, 48, 59, true)?;   // Outer lip
+        draw_polyline(im, &landmarks, 60, 67, true)?;   // Inner lip
     } else {
         for point in landmarks {
-            println!("{:?}", point);
             circle(
                 im,
-                Point::default(),
+                Point::new(point.x.round() as i32, point.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
                 3,
                 Scalar::from((0, 0, 255)),
-                opencv::imgproc::FILLED,
+                0,
                 opencv::imgproc::LINE_8,
                 0,
             )?;
@@ -100,13 +117,3 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point>) -> opencv::Result<()>
     }
     Ok(())
 }
-// hog.detect_multi_scale(
-//     &frame,
-//     &mut detected,
-//     0.0,                   // hit_threshold
-//     core::Size::new(8, 8), // win_stride
-//     core::Size::new(0, 0), // padding
-//     1.05,                  // scale
-//     2.0,                   // final_threshold
-//     false,                 // use_meanshift_grouping
-// )?;
