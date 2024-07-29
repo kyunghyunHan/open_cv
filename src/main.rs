@@ -40,6 +40,8 @@ mod yolo;
 mod yolo_image;
 mod face_mark;
 mod video_features;
+mod odometry_algorithm;
+mod warping;
 pub fn main() {
     /*tracker */
     // tracker::main().unwrap();
@@ -55,10 +57,13 @@ pub fn main() {
     // google_net::main().unwrap();
 
     /*face_mark  */
-    face_mark::main().unwrap();
+    // face_mark::main().unwrap();
 
     /*video features */
     // video_features::main().unwrap()
     // ssd_face_detector::main().unwrap();
     // face_mark::main().unwrap();
+
+    /*Warping */
+    warping::main().unwrap();
 }
