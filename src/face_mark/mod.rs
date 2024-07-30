@@ -94,7 +94,7 @@ fn draw_polyline(
 }
 
 fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>) -> opencv::Result<()> {
-    if landmarks.len() != 68 {
+    if landmarks.len() == 68 {
         println!("Drawing landmarks with 68 points");
         draw_polyline(im, &landmarks, 0, 16, false)?;   // Jaw line
         draw_polyline(im, &landmarks, 17, 21, false)?;  // Left eyebrow
