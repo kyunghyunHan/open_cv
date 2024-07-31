@@ -17,7 +17,7 @@ pub fn main() -> Result<()> {
     facemark.load_model("./dataset/lbfmodel.yaml").unwrap();
     let window = "video capture";
     highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
-    let mut cam = videoio::VideoCapture::from_file("./video/smile1.mov", 0)?;
+    let mut cam = videoio::VideoCapture::from_file("./video/face1.mp4", 0)?;
     let opened = videoio::VideoCapture::is_opened(&cam)?;
     if !opened {
         panic!("Unable to open video file!");
@@ -94,7 +94,7 @@ fn draw_polyline(
 }
 
 fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>) -> opencv::Result<()> {
-    if landmarks.len() == 68 {
+    if landmarks.len() != 68 {
         println!("Drawing landmarks with 68 points");
         draw_polyline(im, &landmarks, 0, 16, false)?;   // Jaw line
         draw_polyline(im, &landmarks, 17, 21, false)?;  // Left eyebrow
@@ -112,7 +112,8 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>) -> opencv::Result<(
             } else {
                 Scalar::from((0, 0, 255)) // Red for other points
             };
-
+            
+           if i >47 && i<60 {
             circle(
                 im,
                 Point::new(point.x.round() as i32, point.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
@@ -122,17 +123,19 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>) -> opencv::Result<(
                 opencv::imgproc::LINE_8,
                 0,
             )?;
-            put_text(
-                im,
-                &i.to_string(),
-                Point::new(point.x.round() as i32, point.y.round() as i32),
-                FONT_HERSHEY_SIMPLEX,
-                0.4,
-                color,
-                1,
-                LINE_8,
-                false,
-            )?;
+            // put_text(
+            //     im,
+            //     &i.to_string(),
+            //     Point::new(point.x.round() as i32, point.y.round() as i32),
+            //     FONT_HERSHEY_SIMPLEX,
+            //     0.4,
+            //     color,
+            //     1,
+            //     LINE_8,
+            //     false,
+            // )?;
+           }
+           println!("{:?}",point)
         }
     }
     Ok(())
