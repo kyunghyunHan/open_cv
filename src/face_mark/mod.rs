@@ -1,16 +1,12 @@
 use opencv::{
-    core::{Point, Point2f, Rect, Scalar, Size_, Vector},
-    face::FacemarkLBF,
-    highgui,
-    imgproc::{
+    core::{Point, Point2f, Rect, Rect_, Scalar, Size_, Vec3b, Vec4b, Vector}, face::FacemarkLBF, highgui, imgcodecs::{imread,IMREAD_COLOR,IMREAD_UNCHANGED}, imgproc::{resize,
         circle, cvt_color, polylines, put_text, COLOR_BGR2GRAY, FONT_HERSHEY_SIMPLEX, LINE_8,
-    },
-    objdetect::CascadeClassifier,
-    prelude::*,
-    videoio, Result,
+    }, objdetect::CascadeClassifier, prelude::*, videoio, Result
 };
 
 pub fn main() -> Result<()> {
+    let mut logo: Mat  =imread("./img/perfect.png", IMREAD_UNCHANGED).unwrap();
+    println!("{:?}",logo);
     let mut face_detector: CascadeClassifier =
         CascadeClassifier::new("./dataset/haarcascade_frontalface_alt2.xml").unwrap();
     let mut facemark = FacemarkLBF::create_def().unwrap();
@@ -22,6 +18,13 @@ pub fn main() -> Result<()> {
     if !opened {
         panic!("Unable to open video file!");
     }
+    let frame_width = cam.get(videoio::CAP_PROP_FRAME_WIDTH)? as i32;
+    let frame_height = cam.get(videoio::CAP_PROP_FRAME_HEIGHT)? as i32;
+    let logo_width = frame_width / 4; // 로고 크기를 동영상의 1/4로 조정
+    let logo_height = (logo.rows() * logo_width) / logo.cols();
+    let mut logot =  Mat::default();
+    resize(&logo, &mut logot, Size_::new(logo_width, logo_height), 0.0, 0.0, 1)?;
+
     loop {
         let mut frame = Mat::default();
         let mut gray = Mat::default();
@@ -46,6 +49,11 @@ pub fn main() -> Result<()> {
         if faces.len() > 0 {
             // println!("Faces detected: {}", faces.len());
         }
+        let x_offset = frame_width - logot.cols() - 10; // 오른쪽 하단에 로고 배치
+        let y_offset = frame_height - logot.rows() - 10;
+        let roi = Rect::new(x_offset, y_offset, logot.cols(), logot.rows());
+
+        overlay_image(&mut frame, &logot, roi);
 
         let mut landmarks: Vector<Vector<Point2f>> = Vector::default();
         let success: bool = facemark.fit(&mut frame, &faces, &mut landmarks).unwrap();
@@ -56,6 +64,7 @@ pub fn main() -> Result<()> {
                 draw_landmarks(&mut frame, &landmarks.get(i).unwrap()).unwrap();
             }
         }
+
         highgui::imshow(window, &frame)?; // 프레임을 업데이트하여 그린 랜드마크를 표시
         let key = highgui::wait_key(10)?;
         if key > 0 && key != 255 {
@@ -63,6 +72,8 @@ pub fn main() -> Result<()> {
 
             break;
         }
+
+        
     }
     Ok(())
 }
@@ -92,7 +103,18 @@ fn draw_polyline(
     )?;
     Ok(())
 }
-
+fn overlay_image(frame: &mut Mat, logo: &Mat, roi: Rect) {
+    for y in 0..logo.rows() {
+        for x in 0..logo.cols() {
+            let frame_pixel = frame.at_2d_mut::<Vec3b>(y + roi.y, x + roi.x).unwrap();
+            let logo_pixel = logo.at_2d::<Vec4b>(y, x).unwrap();
+            let alpha = logo_pixel[3] as f32 / 255.0;
+            for c in 0..3 {
+                frame_pixel[c] = (alpha * logo_pixel[c] as f32 + (1.0 - alpha) * frame_pixel[c] as f32) as u8;
+            }
+        }
+    }
+}
 fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>) -> opencv::Result<()> {
     if landmarks.len() != 68 {
         println!("Drawing landmarks with 68 points");
@@ -126,22 +148,32 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>) -> opencv::Result<(
             opencv::imgproc::LINE_8,
             0,
         )?;
+        // println!(
+        //     "{}",
+        //     right_mouse.x.round() as i32 - left_mouse.x.round() as i32
+        // );
+        // println!("{}",right_mouse.x.round());
         println!("{}",right_mouse.x.round() as i32 - left_mouse.x.round() as i32);
 
-        if right_mouse.x.round() as i32 - left_mouse.x.round() as i32 >140{
-            println!("{}",right_mouse.x.round() as i32 - left_mouse.x.round() as i32);
+        // println!("{}", right_mouse.x.round() + left_mouse.x.round());
 
-                put_text(
-                    im,
-                    &"good",
-                    Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
-                    FONT_HERSHEY_SIMPLEX,
-                    0.4,
-                    Scalar::from((0, 0, 255)),
-                    1,
-                    LINE_8,
-                    false,
-                )?;
+        if right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 140 {
+            println!(
+                "{}",
+                right_mouse.x.round() as i32 - left_mouse.x.round() as i32
+            );
+
+            put_text(
+                im,
+                &"good",
+                Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+                FONT_HERSHEY_SIMPLEX,
+                0.4,
+                Scalar::from((0, 0, 255)),
+                1,
+                LINE_8,
+                false,
+            )?;
         }
         // println!("{:?}",test);
         // for (i, point) in landmarks.iter().enumerate() {
