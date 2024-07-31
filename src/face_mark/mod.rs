@@ -44,14 +44,14 @@ pub fn main() -> Result<()> {
             .unwrap();
 
         if faces.len() > 0 {
-            println!("Faces detected: {}", faces.len());
+            // println!("Faces detected: {}", faces.len());
         }
 
         let mut landmarks: Vector<Vector<Point2f>> = Vector::default();
         let success: bool = facemark.fit(&mut frame, &faces, &mut landmarks).unwrap();
 
         if success {
-            println!("Landmarks detected for {} faces", landmarks.len());
+            // println!("Landmarks detected for {} faces", landmarks.len());
             for i in 0..landmarks.len() {
                 draw_landmarks(&mut frame, &landmarks.get(i).unwrap()).unwrap();
             }
@@ -106,7 +106,6 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>) -> opencv::Result<(
         draw_polyline(im, &landmarks, 48, 59, true)?; // Outer lip
         draw_polyline(im, &landmarks, 60, 67, true)?; // Inner lip
     } else {
-        let mut count = 0.;
         let left_mouse = landmarks.get(48).unwrap();
         let right_mouse = landmarks.get(54).unwrap();
         circle(
@@ -127,6 +126,23 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>) -> opencv::Result<(
             opencv::imgproc::LINE_8,
             0,
         )?;
+        println!("{}",right_mouse.x.round() as i32 - left_mouse.x.round() as i32);
+
+        if right_mouse.x.round() as i32 - left_mouse.x.round() as i32 >140{
+            println!("{}",right_mouse.x.round() as i32 - left_mouse.x.round() as i32);
+
+                put_text(
+                    im,
+                    &"good",
+                    Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+                    FONT_HERSHEY_SIMPLEX,
+                    0.4,
+                    Scalar::from((0, 0, 255)),
+                    1,
+                    LINE_8,
+                    false,
+                )?;
+        }
         // println!("{:?}",test);
         // for (i, point) in landmarks.iter().enumerate() {
         //     let color = if i == 48 || i == 54 {
