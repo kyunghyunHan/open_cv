@@ -5,7 +5,7 @@ use opencv::{
 };
 
 pub fn main() -> Result<()> {
-    let mut logo: Mat  =imread("./img/perfect.png", IMREAD_UNCHANGED).unwrap();
+    let  logo: Mat  =imread("./img/perfect.png", IMREAD_UNCHANGED).unwrap();
     println!("{:?}",logo);
     let mut face_detector: CascadeClassifier =
         CascadeClassifier::new("./dataset/haarcascade_frontalface_alt2.xml").unwrap();
@@ -49,8 +49,8 @@ pub fn main() -> Result<()> {
         if faces.len() > 0 {
             // println!("Faces detected: {}", faces.len());
         }
-        let x_offset = frame_width - logot.cols() - 10; // 오른쪽 하단에 로고 배치
-        let y_offset = frame_height - logot.rows() - 10;
+        let x_offset = frame_width/2; // 오른쪽 하단에 로고 배치
+        let y_offset = frame_height /2;
         let roi = Rect::new(x_offset, y_offset, logot.cols(), logot.rows());
 
         overlay_image(&mut frame, &logot, roi);
