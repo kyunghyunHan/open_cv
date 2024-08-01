@@ -53,7 +53,7 @@ pub fn main() -> Result<()> {
         let y_offset = frame_height /2;
         let roi = Rect::new(x_offset, y_offset, logot.cols(), logot.rows());
 
-        overlay_image(&mut frame, &logot, roi);
+        // overlay_image(&mut frame, &logot, roi);
 
         let mut landmarks: Vector<Vector<Point2f>> = Vector::default();
         let success: bool = facemark.fit(&mut frame, &faces, &mut landmarks).unwrap();
@@ -61,7 +61,7 @@ pub fn main() -> Result<()> {
         if success {
             // println!("Landmarks detected for {} faces", landmarks.len());
             for i in 0..landmarks.len() {
-                draw_landmarks(&mut frame, &landmarks.get(i).unwrap()).unwrap();
+                draw_landmarks(&mut frame, &landmarks.get(i).unwrap(),&logot,roi).unwrap();
             }
         }
 
@@ -115,7 +115,7 @@ fn overlay_image(frame: &mut Mat, logo: &Mat, roi: Rect) {
         }
     }
 }
-fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>) -> opencv::Result<()> {
+fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<i32>) -> opencv::Result<()> {
     if landmarks.len() != 68 {
         println!("Drawing landmarks with 68 points");
         draw_polyline(im, &landmarks, 0, 16, false)?; // Jaw line
@@ -139,6 +139,8 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>) -> opencv::Result<(
             opencv::imgproc::LINE_8,
             0,
         )?;
+
+
         circle(
             im,
             Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
@@ -162,7 +164,7 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>) -> opencv::Result<(
                 "{}",
                 right_mouse.x.round() as i32 - left_mouse.x.round() as i32
             );
-
+            overlay_image( im, log, roi);
             put_text(
                 im,
                 &"good",

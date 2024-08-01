@@ -10,12 +10,14 @@ mod cv_dl;
 mod deep_learning;
 mod drawing;
 mod edges;
+mod face_mark;
 mod filter;
 mod google_net;
 mod histogram;
 mod hog;
 mod hough;
 mod image;
+mod image_gif;
 mod keyboard;
 mod keypoint;
 mod labeling;
@@ -25,6 +27,7 @@ mod matching;
 mod module;
 mod mouse_event;
 mod object_detection;
+mod odometry_algorithm;
 mod perspective;
 mod qr_code;
 mod resnet_image;
@@ -34,18 +37,16 @@ mod torch;
 mod tracker;
 mod utils;
 mod video;
+mod video_features;
+mod warping;
 mod web_cam_streaming_server;
 mod window_capture;
 mod yolo;
 mod yolo_image;
-mod face_mark;
-mod video_features;
-mod odometry_algorithm;
-mod warping;
 pub fn main() {
     /*tracker */
     // tracker::main().unwrap();
-    
+
     /* */
     // ssd_face_detector::main().unwrap();
 
@@ -62,8 +63,10 @@ pub fn main() {
     /*video features */
     // video_features::main().unwrap()
     // ssd_face_detector::main().unwrap();
-    face_mark::main().unwrap();
+    // face_mark::main().unwrap();
 
     /*Warping */
     // warping::main().unwrap();
+
+    image_gif::main().unwrap();
 }
