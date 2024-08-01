@@ -63,10 +63,10 @@ pub fn main() {
     /*video features */
     // video_features::main().unwrap()
     // ssd_face_detector::main().unwrap();
-    // face_mark::main().unwrap();
+    face_mark::main().unwrap();
 
     /*Warping */
     // warping::main().unwrap();
 
-    image_gif::main().unwrap();
+    // image_gif::main().unwrap();
 }

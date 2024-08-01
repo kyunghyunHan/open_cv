@@ -13,7 +13,7 @@ pub fn main() -> Result<()> {
     facemark.load_model("./dataset/lbfmodel.yaml").unwrap();
     let window = "video capture";
     highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
-    let mut cam = videoio::VideoCapture::from_file("./video/face3.mp4", 0)?;
+    let mut cam = videoio::VideoCapture::from_file("./video/face4.mp4", 0)?;
     let opened = videoio::VideoCapture::is_opened(&cam)?;
     if !opened {
         panic!("Unable to open video file!");
@@ -159,7 +159,9 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
 
         // println!("{}", right_mouse.x.round() + left_mouse.x.round());
 
-        if right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 140 {
+
+        /*세번쨰 동영상 */
+        if right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 140||  80 > right_mouse.x.round() as i32 - left_mouse.x.round() as i32 {
             println!(
                 "{}",
                 right_mouse.x.round() as i32 - left_mouse.x.round() as i32
