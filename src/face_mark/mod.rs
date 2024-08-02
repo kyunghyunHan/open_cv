@@ -137,11 +137,18 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
 
         가운데 위 51번
         아래 
+
+
+        최대길이 180
+
+        최소길이 
          */
         let test_mouse = landmarks.get(66).unwrap();
-
+       
         let left_mouse = landmarks.get(48).unwrap();
         let right_mouse = landmarks.get(54).unwrap();
+       
+
         circle(
             im,
             Point::new(left_mouse.x.round() as i32, left_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
@@ -174,31 +181,48 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
         // println!(
         //     "{}",
         //     right_mouse.x.round() as i32 - left_mouse.x.round() as i32
-        // );
+        // );s
         // println!("{}",right_mouse.x.round());
         println!("{}",right_mouse.x.round() as i32 - left_mouse.x.round() as i32);
 
 
 
         /*세번쨰 동영상 */
-        // if right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 140||  80 > right_mouse.x.round() as i32 - left_mouse.x.round() as i32 {
-        //     println!(
-        //         "{}",
-        //         right_mouse.x.round() as i32 - left_mouse.x.round() as i32
-        //     );
-        //     overlay_image( im, log, roi);
-        //     put_text(
-        //         im,
-        //         &"good",
-        //         Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
-        //         FONT_HERSHEY_SIMPLEX,
-        //         0.4,
-        //         Scalar::from((0, 0, 255)),
-        //         1,
-        //         LINE_8,
-        //         false,
-        //     )?;
-        // }
+        if right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 140{
+            println!(
+                "{}",
+                right_mouse.x.round() as i32 - left_mouse.x.round() as i32
+            );
+            // overlay_image( im, log, roi);
+            put_text(
+                im,
+                &"a",
+                Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+                FONT_HERSHEY_SIMPLEX,
+                1.3,
+                Scalar::from((0, 255, 255)),
+                3,
+                LINE_8,
+                false,
+            )?;
+        }else if 80 > right_mouse.x.round() as i32 - left_mouse.x.round() as i32{
+            println!(
+                "{}",
+                right_mouse.x.round() as i32 - left_mouse.x.round() as i32
+            );
+            // overlay_image( im, log, roi);
+            put_text(
+                im,
+                &"e",
+                Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+                FONT_HERSHEY_SIMPLEX,
+                1.3,
+                Scalar::from((0, 255, 255)),
+                3,
+                LINE_8,
+                false,
+            )?;
+        }
         // println!("{:?}",test);
         // for (i, point) in landmarks.iter().enumerate() {
         //     let color = if i == 48 || i == 54 {
