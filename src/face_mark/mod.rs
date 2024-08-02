@@ -205,7 +205,7 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
             // overlay_image( im, log, roi);
             put_text(
                 im,
-                &"a",
+                &"A",
                 Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
                 FONT_HERSHEY_SIMPLEX,
                 1.3,
@@ -222,10 +222,61 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
             // overlay_image( im, log, roi);
             put_text(
                 im,
-                &"e",
+                &"E",
                 Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
                 FONT_HERSHEY_SIMPLEX,
-                1.3,
+                2.0,
+                Scalar::from((0, 255, 255)),
+                3,
+                LINE_8,
+                false,
+            )?;
+        }else if 80 > right_mouse.x.round() as i32 - left_mouse.x.round() as i32{
+            println!(
+                "{}",
+                right_mouse.x.round() as i32 - left_mouse.x.round() as i32
+            );
+            // overlay_image( im, log, roi);
+            put_text(
+                im,
+                &"I",
+                Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+                FONT_HERSHEY_SIMPLEX,
+                2.0,
+                Scalar::from((0, 255, 255)),
+                3,
+                LINE_8,
+                false,
+            )?;
+        }else if 80 > right_mouse.x.round() as i32 - left_mouse.x.round() as i32{
+            println!(
+                "{}",
+                right_mouse.x.round() as i32 - left_mouse.x.round() as i32
+            );
+            // overlay_image( im, log, roi);
+            put_text(
+                im,
+                &"O",
+                Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+                FONT_HERSHEY_SIMPLEX,
+                2.0,
+                Scalar::from((0, 255, 255)),
+                3,
+                LINE_8,
+                false,
+            )?;
+        }else if 80 > right_mouse.x.round() as i32 - left_mouse.x.round() as i32{
+            println!(
+                "{}",
+                right_mouse.x.round() as i32 - left_mouse.x.round() as i32
+            );
+            // overlay_image( im, log, roi);
+            put_text(
+                im,
+                &"U",
+                Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+                FONT_HERSHEY_SIMPLEX,
+                2.0,
                 Scalar::from((0, 255, 255)),
                 3,
                 LINE_8,
