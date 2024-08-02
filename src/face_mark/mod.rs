@@ -128,11 +128,32 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
         draw_polyline(im, &landmarks, 48, 59, true)?; // Outer lip
         draw_polyline(im, &landmarks, 60, 67, true)?; // Inner lip
     } else {
+
+
+
+        /*
+        왼쪽 끝 48번
+        오른 쪽 끝 54번
+
+        가운데 위 51번
+        아래 
+         */
+        let test_mouse = landmarks.get(66).unwrap();
+
         let left_mouse = landmarks.get(48).unwrap();
         let right_mouse = landmarks.get(54).unwrap();
         circle(
             im,
             Point::new(left_mouse.x.round() as i32, left_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+            3,
+            Scalar::from((0, 0, 255)),
+            0,
+            opencv::imgproc::LINE_8,
+            0,
+        )?;
+        circle(
+            im,
+            Point::new(test_mouse.x.round() as i32, test_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
             3,
             Scalar::from((0, 0, 255)),
             0,
@@ -157,28 +178,27 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
         // println!("{}",right_mouse.x.round());
         println!("{}",right_mouse.x.round() as i32 - left_mouse.x.round() as i32);
 
-        // println!("{}", right_mouse.x.round() + left_mouse.x.round());
 
 
         /*세번쨰 동영상 */
-        if right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 140||  80 > right_mouse.x.round() as i32 - left_mouse.x.round() as i32 {
-            println!(
-                "{}",
-                right_mouse.x.round() as i32 - left_mouse.x.round() as i32
-            );
-            overlay_image( im, log, roi);
-            put_text(
-                im,
-                &"good",
-                Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
-                FONT_HERSHEY_SIMPLEX,
-                0.4,
-                Scalar::from((0, 0, 255)),
-                1,
-                LINE_8,
-                false,
-            )?;
-        }
+        // if right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 140||  80 > right_mouse.x.round() as i32 - left_mouse.x.round() as i32 {
+        //     println!(
+        //         "{}",
+        //         right_mouse.x.round() as i32 - left_mouse.x.round() as i32
+        //     );
+        //     overlay_image( im, log, roi);
+        //     put_text(
+        //         im,
+        //         &"good",
+        //         Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+        //         FONT_HERSHEY_SIMPLEX,
+        //         0.4,
+        //         Scalar::from((0, 0, 255)),
+        //         1,
+        //         LINE_8,
+        //         false,
+        //     )?;
+        // }
         // println!("{:?}",test);
         // for (i, point) in landmarks.iter().enumerate() {
         //     let color = if i == 48 || i == 54 {
