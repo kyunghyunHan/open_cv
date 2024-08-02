@@ -143,38 +143,47 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
 
         최소길이 
          */
-        let test_mouse = landmarks.get(66).unwrap();
-       
+        let middle_top_mouse = landmarks.get(51).unwrap();
+        let middle_buttom_mouse = landmarks.get(66).unwrap();
+
         let left_mouse = landmarks.get(48).unwrap();
         let right_mouse = landmarks.get(54).unwrap();
        
 
+  
+        circle(
+            im,
+            Point::new(middle_top_mouse.x.round() as i32, middle_top_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+            4,
+            Scalar::from((0, 0, 255)),
+            1,
+            opencv::imgproc::LINE_8,
+            0,
+        )?;
+        circle(
+            im,
+            Point::new(middle_buttom_mouse.x.round() as i32, middle_buttom_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+            4,
+            Scalar::from((0, 0, 255)),
+            1,
+            opencv::imgproc::LINE_8,
+            0,
+        )?;
         circle(
             im,
             Point::new(left_mouse.x.round() as i32, left_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
-            3,
+            4,
             Scalar::from((0, 0, 255)),
-            0,
+            1,
             opencv::imgproc::LINE_8,
             0,
         )?;
-        circle(
-            im,
-            Point::new(test_mouse.x.round() as i32, test_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
-            3,
-            Scalar::from((0, 0, 255)),
-            0,
-            opencv::imgproc::LINE_8,
-            0,
-        )?;
-
-
         circle(
             im,
             Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
             3,
             Scalar::from((0, 0, 255)),
-            0,
+            1,
             opencv::imgproc::LINE_8,
             0,
         )?;
