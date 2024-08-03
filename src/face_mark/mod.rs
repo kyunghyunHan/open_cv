@@ -144,7 +144,7 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
         최소길이 
          */
         let middle_top_mouse = landmarks.get(51).unwrap();
-        let middle_buttom_mouse = landmarks.get(66).unwrap();
+        let middle_buttom_mouse = landmarks.get(57).unwrap();
 
         let left_mouse = landmarks.get(48).unwrap();
         let right_mouse = landmarks.get(54).unwrap();
@@ -187,11 +187,7 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
             opencv::imgproc::LINE_8,
             0,
         )?;
-        // println!(
-        //     "{}",
-        //     right_mouse.x.round() as i32 - left_mouse.x.round() as i32
-        // );s
-        // println!("{}",right_mouse.x.round());
+
         println!("{}",right_mouse.x.round() as i32 - left_mouse.x.round() as i32);
 
 
@@ -214,6 +210,7 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
                 LINE_8,
                 false,
             )?;
+            //
         }else if 80 > right_mouse.x.round() as i32 - left_mouse.x.round() as i32{
             println!(
                 "{}",
