@@ -1,12 +1,20 @@
 use opencv::{
-    core::{Point, Point2f, Rect, Rect_, Scalar, Size_, Vec3b, Vec4b, Vector}, face::FacemarkLBF, highgui, imgcodecs::{imread,IMREAD_COLOR,IMREAD_UNCHANGED}, imgproc::{resize,
-        circle, cvt_color, polylines, put_text, COLOR_BGR2GRAY, FONT_HERSHEY_SIMPLEX, LINE_8,
-    }, objdetect::CascadeClassifier, prelude::*, videoio, Result
+    core::{Point, Point2f, Rect, Rect_, Scalar, Size_, Vec3b, Vec4b, Vector},
+    face::FacemarkLBF,
+    highgui,
+    imgcodecs::{imread, IMREAD_UNCHANGED},
+    imgproc::{
+        circle, cvt_color, polylines, put_text, resize, COLOR_BGR2GRAY, FONT_HERSHEY_SIMPLEX,
+        LINE_8,
+    },
+    objdetect::CascadeClassifier,
+    prelude::*,
+    videoio, Result,
 };
 
 pub fn main() -> Result<()> {
-    let  logo: Mat  =imread("./img/perfect.png", IMREAD_UNCHANGED).unwrap();
-    println!("{:?}",logo);
+    let logo: Mat = imread("./img/perfect.png", IMREAD_UNCHANGED).unwrap();
+    println!("{:?}", logo);
     let mut face_detector: CascadeClassifier =
         CascadeClassifier::new("./dataset/haarcascade_frontalface_alt2.xml").unwrap();
     let mut facemark = FacemarkLBF::create_def().unwrap();
@@ -22,8 +30,15 @@ pub fn main() -> Result<()> {
     let frame_height = cam.get(videoio::CAP_PROP_FRAME_HEIGHT)? as i32;
     let logo_width = frame_width / 4; // 로고 크기를 동영상의 1/4로 조정
     let logo_height = (logo.rows() * logo_width) / logo.cols();
-    let mut logot =  Mat::default();
-    resize(&logo, &mut logot, Size_::new(logo_width, logo_height), 0.0, 0.0, 1)?;
+    let mut logot = Mat::default();
+    resize(
+        &logo,
+        &mut logot,
+        Size_::new(logo_width, logo_height),
+        0.0,
+        0.0,
+        1,
+    )?;
 
     loop {
         let mut frame = Mat::default();
@@ -49,8 +64,8 @@ pub fn main() -> Result<()> {
         if faces.len() > 0 {
             // println!("Faces detected: {}", faces.len());
         }
-        let x_offset = frame_width/2; // 오른쪽 하단에 로고 배치
-        let y_offset = frame_height /2;
+        let x_offset = frame_width / 2; // 오른쪽 하단에 로고 배치
+        let y_offset = frame_height / 2;
         let roi = Rect::new(x_offset, y_offset, logot.cols(), logot.rows());
 
         // overlay_image(&mut frame, &logot, roi);
@@ -61,7 +76,7 @@ pub fn main() -> Result<()> {
         if success {
             // println!("Landmarks detected for {} faces", landmarks.len());
             for i in 0..landmarks.len() {
-                draw_landmarks(&mut frame, &landmarks.get(i).unwrap(),&logot,roi).unwrap();
+                draw_landmarks(&mut frame, &landmarks.get(i).unwrap(), &logot, roi).unwrap();
             }
         }
 
@@ -72,8 +87,6 @@ pub fn main() -> Result<()> {
 
             break;
         }
-
-        
     }
     Ok(())
 }
@@ -110,12 +123,18 @@ fn overlay_image(frame: &mut Mat, logo: &Mat, roi: Rect) {
             let logo_pixel = logo.at_2d::<Vec4b>(y, x).unwrap();
             let alpha = logo_pixel[3] as f32 / 255.0;
             for c in 0..3 {
-                frame_pixel[c] = (alpha * logo_pixel[c] as f32 + (1.0 - alpha) * frame_pixel[c] as f32) as u8;
+                frame_pixel[c] =
+                    (alpha * logo_pixel[c] as f32 + (1.0 - alpha) * frame_pixel[c] as f32) as u8;
             }
         }
     }
 }
-fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<i32>) -> opencv::Result<()> {
+fn draw_landmarks(
+    im: &mut Mat,
+    landmarks: &Vector<Point2f>,
+    log: &Mat,
+    roi: Rect_<i32>,
+) -> opencv::Result<()> {
     if landmarks.len() != 68 {
         println!("Drawing landmarks with 68 points");
         draw_polyline(im, &landmarks, 0, 16, false)?; // Jaw line
@@ -128,32 +147,33 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
         draw_polyline(im, &landmarks, 48, 59, true)?; // Outer lip
         draw_polyline(im, &landmarks, 60, 67, true)?; // Inner lip
     } else {
-
-
-
         /*
         왼쪽 끝 48번
         오른 쪽 끝 54번
 
         가운데 위 51번
-        아래 
+        아래
 
 
         최대길이 180
 
-        최소길이 
+        최소길이
          */
         let middle_top_mouse = landmarks.get(51).unwrap();
         let middle_buttom_mouse = landmarks.get(57).unwrap();
 
         let left_mouse = landmarks.get(48).unwrap();
         let right_mouse = landmarks.get(54).unwrap();
-       
 
-  
+        println!("위  - 아래{}",  middle_buttom_mouse.y - middle_top_mouse.y);
+        println!("오른쪽  - 왼쪾{}", right_mouse.x - left_mouse.x);
+
         circle(
             im,
-            Point::new(middle_top_mouse.x.round() as i32, middle_top_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+            Point::new(
+                middle_top_mouse.x.round() as i32,
+                middle_top_mouse.y.round() as i32,
+            ), // 좌표를 반올림하여 정수형으로 변환
             4,
             Scalar::from((0, 0, 255)),
             1,
@@ -162,7 +182,10 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
         )?;
         circle(
             im,
-            Point::new(middle_buttom_mouse.x.round() as i32, middle_buttom_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+            Point::new(
+                middle_buttom_mouse.x.round() as i32,
+                middle_buttom_mouse.y.round() as i32,
+            ), // 좌표를 반올림하여 정수형으로 변환
             4,
             Scalar::from((0, 0, 255)),
             1,
@@ -188,39 +211,18 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
             0,
         )?;
 
-        println!("{}",right_mouse.x.round() as i32 - left_mouse.x.round() as i32);
-
-
-
-        /*세번쨰 동영상 */
-        if right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 140{
-            println!(
-                "{}",
-                right_mouse.x.round() as i32 - left_mouse.x.round() as i32
-            );
+        // println!(
+        //     "{}",
+        //     right_mouse.x.round() as i32 - left_mouse.x.round() as i32
+        // );
+        /*  a */
+        if middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32 > 80 && right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 100 {
+           println!("이거다");
             // overlay_image( im, log, roi);
             put_text(
                 im,
                 &"A",
-                Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
-                FONT_HERSHEY_SIMPLEX,
-                1.3,
-                Scalar::from((0, 255, 255)),
-                3,
-                LINE_8,
-                false,
-            )?;
-            //
-        }else if 80 > right_mouse.x.round() as i32 - left_mouse.x.round() as i32{
-            println!(
-                "{}",
-                right_mouse.x.round() as i32 - left_mouse.x.round() as i32
-            );
-            // overlay_image( im, log, roi);
-            put_text(
-                im,
-                &"E",
-                Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+                Point::new(200, 200), // 좌표를 반올림하여 정수형으로 변환
                 FONT_HERSHEY_SIMPLEX,
                 2.0,
                 Scalar::from((0, 255, 255)),
@@ -228,7 +230,26 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
                 LINE_8,
                 false,
             )?;
-        }else if 80 > right_mouse.x.round() as i32 - left_mouse.x.round() as i32{
+            /*  e */
+        } else if  middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32 > 70 && right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 120 {
+            // println!(
+            //     "{}",
+            //     right_mouse.x.round() as i32 - left_mouse.x.round() as i32
+            // );
+            // overlay_image( im, log, roi);
+            put_text(
+                im,
+                &"E",
+                Point::new(200, 200), // 좌표를 반올림하여 정수형으로 변환
+                FONT_HERSHEY_SIMPLEX,
+                2.0,
+                Scalar::from((0, 255, 255)),
+                3,
+                LINE_8,
+                false,
+            )?;
+            /*  i */
+        } else if 60 > middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32  && right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 130 {
             println!(
                 "{}",
                 right_mouse.x.round() as i32 - left_mouse.x.round() as i32
@@ -237,7 +258,7 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
             put_text(
                 im,
                 &"I",
-                Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+                Point::new(200, 200), // 좌표를 반올림하여 정수형으로 변환
                 FONT_HERSHEY_SIMPLEX,
                 2.0,
                 Scalar::from((0, 255, 255)),
@@ -245,7 +266,8 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
                 LINE_8,
                 false,
             )?;
-        }else if 80 > right_mouse.x.round() as i32 - left_mouse.x.round() as i32{
+            /*  o */
+        } else if 60 > middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32  && 40 < middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32  &&  right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 70 {
             println!(
                 "{}",
                 right_mouse.x.round() as i32 - left_mouse.x.round() as i32
@@ -254,7 +276,7 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
             put_text(
                 im,
                 &"O",
-                Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+                Point::new(200, 200), // 좌표를 반올림하여 정수형으로 변환
                 FONT_HERSHEY_SIMPLEX,
                 2.0,
                 Scalar::from((0, 255, 255)),
@@ -262,7 +284,8 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
                 LINE_8,
                 false,
             )?;
-        }else if 80 > right_mouse.x.round() as i32 - left_mouse.x.round() as i32{
+            /*  u */
+        } else if 40 > middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32  && 30 < middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32  &&  right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 70 {
             println!(
                 "{}",
                 right_mouse.x.round() as i32 - left_mouse.x.round() as i32
@@ -271,7 +294,7 @@ fn draw_landmarks(im: &mut Mat, landmarks: &Vector<Point2f>,log:& Mat,roi:Rect_<
             put_text(
                 im,
                 &"U",
-                Point::new(right_mouse.x.round() as i32, right_mouse.y.round() as i32), // 좌표를 반올림하여 정수형으로 변환
+                Point::new(200, 200), // 좌표를 반올림하여 정수형으로 변환
                 FONT_HERSHEY_SIMPLEX,
                 2.0,
                 Scalar::from((0, 255, 255)),
