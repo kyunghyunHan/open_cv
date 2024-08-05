@@ -13,32 +13,32 @@ use opencv::{
 };
 
 pub fn main() -> Result<()> {
-    let logo: Mat = imread("./img/perfect.png", IMREAD_UNCHANGED).unwrap();
-    println!("{:?}", logo);
+    // let logo: Mat = imread("./img/perfect.png", IMREAD_UNCHANGED).unwrap();
+    // println!("{:?}", logo);
     let mut face_detector: CascadeClassifier =
         CascadeClassifier::new("./dataset/haarcascade_frontalface_alt2.xml").unwrap();
     let mut facemark = FacemarkLBF::create_def().unwrap();
     facemark.load_model("./dataset/lbfmodel.yaml").unwrap();
     let window = "video capture";
     highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
-    let mut cam = videoio::VideoCapture::from_file("./video/face4.mp4", 0)?;
+    let mut cam = videoio::VideoCapture::from_file("./video/face1.mp4", 0)?;
     let opened = videoio::VideoCapture::is_opened(&cam)?;
     if !opened {
         panic!("Unable to open video file!");
     }
     let frame_width = cam.get(videoio::CAP_PROP_FRAME_WIDTH)? as i32;
     let frame_height = cam.get(videoio::CAP_PROP_FRAME_HEIGHT)? as i32;
-    let logo_width = frame_width / 4; // 로고 크기를 동영상의 1/4로 조정
-    let logo_height = (logo.rows() * logo_width) / logo.cols();
-    let mut logot = Mat::default();
-    resize(
-        &logo,
-        &mut logot,
-        Size_::new(logo_width, logo_height),
-        0.0,
-        0.0,
-        1,
-    )?;
+    // let logo_width = frame_width / 4; // 로고 크기를 동영상의 1/4로 조정
+    // let logo_height = (logo.rows() * logo_width) / logo.cols();
+    // let mut logot = Mat::default();
+    // resize(
+    //     &logo,
+    //     &mut logot,
+    //     Size_::new(logo_width, logo_height),
+    //     0.0,
+    //     0.0,
+    //     1,
+    // )?;
 
     loop {
         let mut frame = Mat::default();
@@ -66,7 +66,7 @@ pub fn main() -> Result<()> {
         }
         let x_offset = frame_width / 2; // 오른쪽 하단에 로고 배치
         let y_offset = frame_height / 2;
-        let roi = Rect::new(x_offset, y_offset, logot.cols(), logot.rows());
+        // let roi = Rect::new(x_offset, y_offset, logot.cols(), logot.rows());
 
         // overlay_image(&mut frame, &logot, roi);
 
@@ -76,7 +76,7 @@ pub fn main() -> Result<()> {
         if success {
             // println!("Landmarks detected for {} faces", landmarks.len());
             for i in 0..landmarks.len() {
-                draw_landmarks(&mut frame, &landmarks.get(i).unwrap(), &logot, roi).unwrap();
+                draw_landmarks(&mut frame, &landmarks.get(i).unwrap()).unwrap();
             }
         }
 
@@ -132,8 +132,8 @@ fn overlay_image(frame: &mut Mat, logo: &Mat, roi: Rect) {
 fn draw_landmarks(
     im: &mut Mat,
     landmarks: &Vector<Point2f>,
-    log: &Mat,
-    roi: Rect_<i32>,
+    // log: &Mat,
+    // roi: Rect_<i32>,
 ) -> opencv::Result<()> {
     if landmarks.len() != 68 {
         println!("Drawing landmarks with 68 points");
@@ -165,7 +165,7 @@ fn draw_landmarks(
         let left_mouse = landmarks.get(48).unwrap();
         let right_mouse = landmarks.get(54).unwrap();
 
-        println!("위  - 아래{}",  middle_buttom_mouse.y - middle_top_mouse.y);
+        println!("위  - 아래{}", middle_buttom_mouse.y - middle_top_mouse.y);
         println!("오른쪽  - 왼쪾{}", right_mouse.x - left_mouse.x);
 
         circle(
@@ -216,8 +216,10 @@ fn draw_landmarks(
         //     right_mouse.x.round() as i32 - left_mouse.x.round() as i32
         // );
         /*  a */
-        if middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32 > 80 && right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 100 {
-           println!("이거다");
+        if middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32 > 80
+            && right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 100
+        {
+            println!("이거다");
             // overlay_image( im, log, roi);
             put_text(
                 im,
@@ -231,7 +233,9 @@ fn draw_landmarks(
                 false,
             )?;
             /*  e */
-        } else if  middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32 > 70 && right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 120 {
+        } else if middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32 > 70
+            && right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 120
+        {
             // println!(
             //     "{}",
             //     right_mouse.x.round() as i32 - left_mouse.x.round() as i32
@@ -249,7 +253,9 @@ fn draw_landmarks(
                 false,
             )?;
             /*  i */
-        } else if 60 > middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32  && right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 130 {
+        } else if 60 > middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32
+            && right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 130
+        {
             println!(
                 "{}",
                 right_mouse.x.round() as i32 - left_mouse.x.round() as i32
@@ -267,7 +273,10 @@ fn draw_landmarks(
                 false,
             )?;
             /*  o */
-        } else if 60 > middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32  && 40 < middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32  &&  right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 70 {
+        } else if 60 > middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32
+            && 40 < middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32
+            && right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 70
+        {
             println!(
                 "{}",
                 right_mouse.x.round() as i32 - left_mouse.x.round() as i32
@@ -285,7 +294,10 @@ fn draw_landmarks(
                 false,
             )?;
             /*  u */
-        } else if 40 > middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32  && 30 < middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32  &&  right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 70 {
+        } else if 40 > middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32
+            && 30 < middle_buttom_mouse.y as i32 - middle_top_mouse.y as i32
+            && right_mouse.x.round() as i32 - left_mouse.x.round() as i32 > 70
+        {
             println!(
                 "{}",
                 right_mouse.x.round() as i32 - left_mouse.x.round() as i32
