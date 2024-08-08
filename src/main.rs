@@ -48,7 +48,10 @@ pub fn main() {
 
     /*Mat OP */
 
-    mat_op::main().unwrap();
+    // mat_op::main().unwrap();
+
+    /*Video Capture */
+    video::main().unwrap();
     /*tracker */
     // tracker::main().unwrap();
 

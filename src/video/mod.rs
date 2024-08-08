@@ -11,11 +11,12 @@ use opencv::{
 };
 /*Video Capture */
 pub fn main() -> Result<()> {
-    // video_capture()?;
-    video_add_capture()?;
+    // camera_in()?;
+    video_in()?;
+    // video_add_capture()?;
     Ok(())
 }
-pub fn video_capture() -> Result<()> {
+pub fn camera_in() -> Result<()> {
     let window = "video capture";
     highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
     /*
@@ -61,30 +62,30 @@ pub fn video_capture() -> Result<()> {
     조절=>set함수
     cap.set(CAP_PROP_POS_FRAMES,19)
      */
-    println!("{}", cap.get(CAP_PROP_FRAME_WIDTH)?.round());
-    println!("{}", cap.get(CAP_PROP_FRAME_HEIGHT)?.round());
-    let opened = videoio::VideoCapture::is_opened(&cap)?;
+    println!("Frame width:{}", cap.get(CAP_PROP_FRAME_WIDTH)?.round());
+    println!("Frame height{}", cap.get(CAP_PROP_FRAME_HEIGHT)?.round());
+
     let fps = cap.get(CAP_PROP_FPS)?;
     println!("FPS:{}", fps);
     let delay = (1000. / fps).round();
     println!("Delay{}", delay);
-    println!("{}", opened);
+
     //일정간격마다 프레임을 받아와서 화면에 출력
     //get:여러가지 정보를 받아옴
     //set:현재열려있는 카메라 또는 비디오 파일 재생과 관련된 속성 값을 설정할떄에 사용
+    let mut frame = Mat::default();
+    let mut inversed = Mat::default();
     loop {
-        let mut frame = Mat::default();
         //카메라 또는 동영상 파일로 부터 다음 프레임을 받아와서 MAt클랙스 형식의 변수 이미지에 저장
         cap.read(&mut frame)?;
-        let mut flipped_frame = frame.clone();
+
         /*프레임 반전 */
         // opencv::core::flip(&frame, &mut flipped_frame, 1)?;
         //c++ 의 ~같은
-        opencv::core::bitwise_not(&frame, &mut flipped_frame, &no_array())?;
+        opencv::core::bitwise_not(&frame, &mut inversed, &no_array())?;
+        highgui::imshow("frame", &frame)?;
+        highgui::imshow("inversed", &inversed)?;
 
-        if frame.size()?.width > 0 {
-            highgui::imshow(window, &flipped_frame)?;
-        }
         //10ms를 기다린 후 다음 프레임
         let key = highgui::wait_key(delay as i32)?;
         //27은 esc
@@ -100,7 +101,7 @@ pub fn video_capture() -> Result<()> {
 pub fn video_in() -> Result<()> {
     let window = "video capture";
     highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
-    let mut cap = videoio::VideoCapture::from_file("girl.mp4", 0)?;
+    let mut cap = videoio::VideoCapture::from_file("./video/face2.mp4", 0)?;
     let opened = videoio::VideoCapture::is_opened(&cap)?;
     if !opened {
         panic!("Unable to open default capera!");
@@ -108,25 +109,28 @@ pub fn video_in() -> Result<()> {
     println!("{}", cap.get(CAP_PROP_FRAME_WIDTH)?.round());
     println!("{}", cap.get(CAP_PROP_FRAME_HEIGHT)?.round());
     println!("{}", cap.get(CAP_PROP_FRAME_COUNT)?.round());
-
     let fps = cap.get(CAP_PROP_FPS)?;
     println!("FPS:{}", fps);
-    let delay = (1000.0 / fps);
+
+
+    let delay = (1000. / fps).round();
+    let mut frame = Mat::default();
+    let mut imversed = Mat::default();
+
     loop {
-        let mut frame = Mat::default();
+        println!("{}",1);
+        
+        cap.read(&mut frame)?;
         if frame.empty() {
             break;
         }
-        cap.read(&mut frame)?;
-
-        let mut imversed = Mat::default();
-        let mask = Mat::default(); //
-        opencv::core::bitwise_not(&frame, &mut imversed, &mask)?;
+        opencv::core::bitwise_not(&frame, &mut imversed, &no_array())?;
         if frame.size()?.width > 0 {
             highgui::imshow(window, &frame)?;
         }
-        let key = highgui::wait_key(10)?;
-        if key > 0 && key != 255 {
+        let key = highgui::wait_key(delay as i32)?;
+        //27은 esc
+        if key == 27 {
             break;
         }
     }
@@ -214,7 +218,7 @@ pub fn video_add_capture() -> Result<()> {
     highgui::destroy_all_windows()?;
 
     if frames.len() > 0 {
-        let mut imgs:Vector<Mat> = Vector::new();
+        let mut imgs: Vector<Mat> = Vector::new();
         for i in 0..frames.len().min(3) {
             imgs.push(frames.get(i)?.clone());
         }
