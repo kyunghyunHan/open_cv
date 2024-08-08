@@ -2,25 +2,16 @@ use crate::image::imgshow;
 use opencv::core::{hconcat, Vector};
 use opencv::videoio::{VideoCapture, CAP_ANY, CAP_DSHOW, CAP_PROP_FPS};
 use opencv::{
-    core::{no_array, Size_},
+    core::{bitwise_not, no_array, Size_},
     highgui::{self, destroy_all_windows, wait_key},
     imgproc,
     prelude::*,
     videoio::{self, CAP_PROP_FRAME_COUNT, CAP_PROP_FRAME_HEIGHT, CAP_PROP_FRAME_WIDTH},
     Result,
 };
-/*Video Capture */
-pub fn main() -> Result<()> {
-    // camera_in()?;
-    // video_in()?;
-    // video_add_capture()?;
-    Ok(())
-}
-pub fn camera_in() -> Result<()> {
-    let window = "video capture";
-    highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
-    /*
-    API
+/*Video Capture
+
+ API
     CAP_ANY:자동선택
     CAP_V4L,CAP_V4L2 리눅스?
     CAP_FIREWIRE,CAP_FIREWARE,CAP_IEEE1394:IEEE 1394 드라이버
@@ -33,18 +24,8 @@ pub fn camera_in() -> Result<()> {
     CAP_IMAGES:일련의 영상파일
     CAP_OPENCV_MJPEG
 
+동영상 여러 정보 가져오기
 
-    컴퓨터에 카메라 한대만 입력되어 있다면 0
-
-    VideoCapture::release():자원해제
-     */
-    let mut cap = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
-    //사용 가능한 상태로 열렸는지 확인
-    if !cap.is_opened()? {
-        panic!("Unable to open default camera!");
-    }
-    //동영상파일로부터 여러가지 정보를 가져오기 위해
-    /*
     CAP_PROP_FRAME_WIDTH:비디오 프레임의 가로크기
     CAP_PROP_FRAME_HEIGHT:비디오 프레임의 세로크기
     CAP_PROP_FPS:초당 프레임수
@@ -60,7 +41,36 @@ pub fn camera_in() -> Result<()> {
     CAP_PROP_FOCUS:초점조절
     조절=>set함수
     cap.set(CAP_PROP_POS_FRAMES,19)
-     */
+
+
+비디오 코덱
+    DIVX :DIVX코덱
+    XVID MPEG-4코덱
+    WMV2:windows Media Video 8코덱
+    MJPG:모션 JPEG코덱
+    YV12: YUV 4:2:0 Planar(비압축)
+    X264 H.264코덱
+    AVC1: Advanced Video코덱
+*/
+pub fn main() -> Result<()> {
+    // camera_in()?;
+    // video_in()?;
+    // camera_in_video_out()?;
+    video_add_capture()?;
+    Ok(())
+}
+pub fn camera_in() -> Result<()> {
+    let window = "video capture";
+    highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
+    //컴퓨터에 카메라 한대만 입력되어 있다면 index 0
+    let mut cap = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
+    //사용 가능한 상태로 열렸는지 확인
+    //자원해제
+    // cap.release()?;
+    if !cap.is_opened()? {
+        panic!("Unable to open default camera!");
+    }
+
     println!("Frame width:{}", cap.get(CAP_PROP_FRAME_WIDTH)?.round());
     println!("Frame height{}", cap.get(CAP_PROP_FRAME_HEIGHT)?.round());
 
@@ -86,9 +96,8 @@ pub fn camera_in() -> Result<()> {
         highgui::imshow("inversed", &inversed)?;
 
         //10ms를 기다린 후 다음 프레임
-        let key = highgui::wait_key(delay as i32)?;
         //27은 esc
-        if key == 27 {
+        if wait_key(delay as i32)? == 27 {
             break;
         }
     }
@@ -98,7 +107,6 @@ pub fn camera_in() -> Result<()> {
 }
 
 pub fn video_in() -> Result<()> {
-
     let mut cap = videoio::VideoCapture::from_file("./video/face2.mp4", 0)?;
     if !cap.is_opened()? {
         panic!("Unable to open default capera!");
@@ -129,57 +137,43 @@ pub fn video_in() -> Result<()> {
     }
     Ok(())
 }
-pub fn video_writer() -> Result<()> {
+
+pub fn camera_in_video_out() -> Result<()> {
     let mut cap = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
-    let opened = videoio::VideoCapture::is_opened(&cap)?;
     //사용 가능한 상태로 열렸는지 확인
-    if !opened {
+    if !cap.is_opened()? {
         panic!("Unable to open default camera!");
     }
 
     let w = cap.get(CAP_PROP_FRAME_WIDTH)? as i32;
     let h = cap.get(CAP_PROP_FRAME_HEIGHT)? as i32;
     let fps = cap.get(CAP_PROP_FPS)?;
-    /*
 
-    DIVX :DIVX코덱
-    XVID MPEG-4코덱
-    WMV2:windows Media Video 8코덱
-    MJPG:모션 JPEG코덱
-    YV12: YUV 4:2:0 Planar(비압축)
-    X264 H.264코덱
-    AVC1: Advanced Video코덱
+    let fourcc = videoio::VideoWriter::fourcc('X', '2', '6', '4')?; //m1기준 x264=>H.264
 
-
-
-     */
-    // let fourcc= videoio::VideoWriter::fourcc('D', 'I', 'V', 'x')?;
-    let fourcc = videoio::VideoWriter::fourcc('D', 'I', 'V', 'X')?;
-
-    let delay = (1000.0 / fps);
+    let delay = 1000.0 / fps.round();
     //타입에러 왁인 코닥
     /*Wait key를 눌러야 저장이됨 */
     let mut output_vedio =
-        videoio::VideoWriter::new("output.mp4", fourcc, fps, Size_::new(w, h), true)?;
+        videoio::VideoWriter::new("./video/output.mp4", fourcc, fps, Size_::new(w, h), true)?;
 
     //사용 가능한 상태로 열렸는지 확인
     if !output_vedio.is_opened()? {
         panic!("Unable to open default camera!");
     }
+    let mut frame = Mat::default();
+    let mut inversed = Mat::default();
 
     loop {
-        let mut frame = Mat::default();
         cap.read(&mut frame)?;
         if frame.empty() {
             break;
         }
-        let mut inversed = Mat::default();
-        opencv::core::bitwise_not(&frame, &mut inversed, &no_array())?;
+        bitwise_not(&frame, &mut inversed, &no_array())?;
         highgui::imshow("frame", &frame)?;
         highgui::imshow("inversed", &inversed)?;
         output_vedio.write(&inversed)?;
-        let key = highgui::wait_key(delay as i32)?;
-        if key == 27 {
+        if wait_key(delay as i32)? == 27 {
             break;
         }
     }
@@ -191,8 +185,7 @@ pub fn video_add_capture() -> Result<()> {
     let mut cap = VideoCapture::new(0, CAP_ANY)?;
 
     if !cap.is_opened()? {
-        println!("카메라가 열리지 않았습니다");
-        std::process::exit(0);
+        panic!("Unable to open default camera!");
     }
     let mut frames: Vector<Mat> = Vector::new();
 
