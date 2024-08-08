@@ -3,7 +3,7 @@ use opencv::core::{hconcat, Vector};
 use opencv::videoio::{VideoCapture, CAP_ANY, CAP_DSHOW, CAP_PROP_FPS};
 use opencv::{
     core::{no_array, Size_},
-    highgui::{self, destroy_all_windows},
+    highgui::{self, destroy_all_windows, wait_key},
     imgproc,
     prelude::*,
     videoio::{self, CAP_PROP_FRAME_COUNT, CAP_PROP_FRAME_HEIGHT, CAP_PROP_FRAME_WIDTH},
@@ -12,7 +12,7 @@ use opencv::{
 /*Video Capture */
 pub fn main() -> Result<()> {
     // camera_in()?;
-    video_in()?;
+    // video_in()?;
     // video_add_capture()?;
     Ok(())
 }
@@ -39,9 +39,8 @@ pub fn camera_in() -> Result<()> {
     VideoCapture::release():자원해제
      */
     let mut cap = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
-    let opened = videoio::VideoCapture::is_opened(&cap)?;
     //사용 가능한 상태로 열렸는지 확인
-    if !opened {
+    if !cap.is_opened()? {
         panic!("Unable to open default camera!");
     }
     //동영상파일로부터 여러가지 정보를 가져오기 위해
@@ -99,11 +98,9 @@ pub fn camera_in() -> Result<()> {
 }
 
 pub fn video_in() -> Result<()> {
-    let window = "video capture";
-    highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
+
     let mut cap = videoio::VideoCapture::from_file("./video/face2.mp4", 0)?;
-    let opened = videoio::VideoCapture::is_opened(&cap)?;
-    if !opened {
+    if !cap.is_opened()? {
         panic!("Unable to open default capera!");
     }
     println!("{}", cap.get(CAP_PROP_FRAME_WIDTH)?.round());
@@ -112,25 +109,21 @@ pub fn video_in() -> Result<()> {
     let fps = cap.get(CAP_PROP_FPS)?;
     println!("FPS:{}", fps);
 
-
     let delay = (1000. / fps).round();
     let mut frame = Mat::default();
-    let mut imversed = Mat::default();
+    let mut inversed = Mat::default();
 
     loop {
-        println!("{}",1);
-        
         cap.read(&mut frame)?;
         if frame.empty() {
             break;
         }
-        opencv::core::bitwise_not(&frame, &mut imversed, &no_array())?;
-        if frame.size()?.width > 0 {
-            highgui::imshow(window, &frame)?;
-        }
-        let key = highgui::wait_key(delay as i32)?;
+        opencv::core::bitwise_not(&frame, &mut inversed, &no_array())?;
+        highgui::imshow("frame", &frame)?;
+        highgui::imshow("inversed", &inversed)?;
+
         //27은 esc
-        if key == 27 {
+        if wait_key(delay as i32)? == 27 {
             break;
         }
     }
