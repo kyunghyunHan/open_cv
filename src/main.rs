@@ -48,7 +48,14 @@ pub fn main() {
     // mat_op::main().unwrap();
 
     /*Video Capture */
-    video::main().unwrap();
+    // video::main().unwrap();
+
+    /*drawing */
+    // drawing::main().unwrap();
+
+
+    /*keyboard */
+    keyboard::main().unwrap();
     /*tracker */
     // tracker::main().unwrap();
 

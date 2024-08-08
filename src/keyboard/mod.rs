@@ -12,7 +12,7 @@ pub fn main() -> Result<()> {
 }
 
 fn keyboard() -> Result<()> {
-    let mut img = imgcodecs::imread("./img/face.jpg", IMREAD_GRAYSCALE)?;
+    let mut img = imgcodecs::imread("./img/face1.jpeg", IMREAD_GRAYSCALE)?;
     if img.empty() {
         println!("{}", "image load failed");
         std::process::exit(0);
@@ -26,9 +26,7 @@ fn keyboard() -> Result<()> {
     let mut is_inverted = false;
 
     loop {
-        let keycode = wait_key(0)?;
-
-        if keycode as u8 as char == 's' {
+        if wait_key(0)? as u8 as char == 's' {
             if is_inverted {
                 // 이미지 반전
                 bitwise_not(&img, &mut b, &a)?;
@@ -38,7 +36,7 @@ fn keyboard() -> Result<()> {
                 imshow("img", &img)?;
             }
             is_inverted = !is_inverted;
-        } else if keycode as u8 as char == 'i' {
+        } else if wait_key(0)? as u8 as char == 'i' {
             println!("{}", "좌우반전");
             // 이미지가 반전되었는지 확인하고 반전되지 않았다면 반전시키고, 이미 반전되었다면 다시 원래대로 반전시킴
             if !is_flipped {
@@ -52,6 +50,5 @@ fn keyboard() -> Result<()> {
             }
         }
     }
-    Ok(())
 }
 

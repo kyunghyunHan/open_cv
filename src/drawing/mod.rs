@@ -1,3 +1,41 @@
+/*
+drawing
+
+line
+
+ img:입출력영상
+    pt1:시작점
+    pt2:끝점
+    colort:선색상
+    thickness:선두께
+    lineType:선타입
+    shift:그리기 좌표값의 축소 비율
+
+    Line Type
+    FILLED:내부를 채움
+    LINE_4:4방향연결
+    LINE_8:8방향 연결
+    LINE_AA:안티에얼리싱
+    arrowedLine:화살표방향 형태의 직선 (tipLength)
+    drawMarke():직전그리기 함수를 이용
+
+
+marker
+
+    Marker Croess:십자가모양
+    Marker_TILTED_CROSS:45도 회전된 모양
+    MARKER_STAR:*모양
+    MARKER_DIMOND:다이아 모양
+    MARKER_SQUARE:정사각형
+
+rectangle
+
+
+text
+
+*/
+
+
 use opencv::{
     core::{Mat, Point, Scalar, CV_8UC3,Rect_,Point_,Vector,Size_},
     highgui,
@@ -16,26 +54,6 @@ pub fn main()->Result<()> {
 
 
 pub fn line() -> Result<()> {
-    /*line
-    img:입출력영상
-    pt1:시작점
-    pt2:끝점
-    colort:선색상
-    thickness:선두께
-    lineType:선타입
-    shift:그리기 좌표값의 축소 비율
-
-    Line Type
-    FILLED:내부를 채움
-    LINE_4:4방향연결
-    LINE_8:8방향 연결
-    LINE_AA:안티에얼리싱
-     */
-
-    /*
-    arrowedLine:화살표방향 형태의 직선 (tipLength)
-    drawMarke():직전그리기 함수를 이용
-    */
     let mut img =
         Mat::new_rows_cols_with_default(400, 400, CV_8UC3, Scalar::from((255.0, 255.0, 255.0)))?;
     
@@ -98,15 +116,7 @@ pub fn line() -> Result<()> {
         0,
         0.05,
     )?;
-    /*
-    Marker Croess:십자가모양
-    Marker_TILTED_CROSS:45도 회전된 모양
-    MARKER_STAR:*모양
-    MARKER_DIMOND:다이아 모양
-    MARKER_SQUARE:정사각형
-    
-    
-     */
+
     imgproc::draw_marker(
         &mut img,
         Point::new(50, 350),
