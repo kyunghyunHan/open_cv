@@ -12,6 +12,7 @@ use opencv::{
     videoio, Result,
 };
 
+
 pub fn main() -> Result<()> {
     // let logo: Mat = imread("./img/perfect.png", IMREAD_UNCHANGED).unwrap();
     // println!("{:?}", logo);

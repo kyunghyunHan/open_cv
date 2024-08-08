@@ -7,3 +7,4 @@ shape_predictor_68_face_landmarks.dat
 /checkpoint
 /data
 mnist_cnn.pt
+.DS_Store

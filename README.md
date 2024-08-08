@@ -51,3 +51,23 @@ brew list --versions
 brew -v install --force --display-times opencv"$BREW_OPENCV_VERSION"
 brew link opencv"$BREW_OPENCV_VERSION"
 ```
+
+## Class
+- Point_ :2차원 평면
+- Size_:사각형 영역의 가로  세로 크기를 나타냄  ,(width,height)
+- Rect_:사각형의 우치와 크기 정보를 표현,x,y는 사각형의 좌측 상단점좌표
+- RotatedRect:회전된 사각형,center사각형의 중심 좌표.angle:회전 각도
+- String:문자열
+- Mat:2차원행렬뿐만 아니라 고차원 행렬 표현,한개이상의 채널을 가지며
+
+```
+s는 정수형 F는 부동 소수형
+CV_8U 0
+CV_8S 1
+CV_16U 2
+CV_16S 3
+CV_32U 4
+CV_32F 5
+CV_65F 6
+CV_16F 7
+```
