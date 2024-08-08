@@ -1,10 +1,8 @@
-use crate::image::imgshow;
 use opencv::core::{hconcat, Vector};
-use opencv::videoio::{VideoCapture, CAP_ANY, CAP_DSHOW, CAP_PROP_FPS};
+use opencv::videoio::{VideoCapture, CAP_ANY, CAP_PROP_FPS};
 use opencv::{
     core::{bitwise_not, no_array, Size_},
     highgui::{self, destroy_all_windows, wait_key},
-    imgproc,
     prelude::*,
     videoio::{self, CAP_PROP_FRAME_COUNT, CAP_PROP_FRAME_HEIGHT, CAP_PROP_FRAME_WIDTH},
     Result,

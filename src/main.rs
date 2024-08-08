@@ -17,7 +17,6 @@ mod histogram;
 mod hog;
 mod hough;
 mod image;
-mod image_gif;
 mod keyboard;
 mod keypoint;
 mod labeling;
