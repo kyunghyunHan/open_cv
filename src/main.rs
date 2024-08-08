@@ -40,7 +40,6 @@ mod video;
 mod video_features;
 mod warping;
 mod web_cam_streaming_server;
-mod window_capture;
 mod yolo;
 mod yolo_image;
 pub fn main() {
