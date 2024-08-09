@@ -1,6 +1,7 @@
 use opencv::objdetect::CascadeClassifier;
 
 mod affine;
+mod file_storage;
 mod binarization;
 mod brihtness;
 mod color_op;
@@ -63,8 +64,12 @@ pub fn main() {
 //    mouse::main().unwrap();
     
     /*trackbar */
-    trackbar::main().unwrap();
- 
+    // trackbar::main().unwrap();
+    
+
+    /*File Storage */
+
+    file_storage::main().unwrap();
     /*tracker */
     // tracker::main().unwrap();
 
