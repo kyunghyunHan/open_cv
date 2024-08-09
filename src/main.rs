@@ -24,7 +24,7 @@ mod machine_learning;
 mod mat_op;
 mod matching;
 mod module;
-mod mouse_event;
+mod mouse;
 mod object_detection;
 mod odometry_algorithm;
 mod perspective;
@@ -40,6 +40,7 @@ mod video_features;
 mod warping;
 mod yolo;
 mod yolo_image;
+mod trackbar;
 pub fn main() {
 
 
@@ -55,17 +56,23 @@ pub fn main() {
 
 
     /*keyboard */
-    keyboard::main().unwrap();
+    // keyboard::main().unwrap();
+
+
+    /*Mouse */
+//    mouse::main().unwrap();
+    
+    /*trackbar */
+    // trackbar::main().unwrap();
+ 
     /*tracker */
     // tracker::main().unwrap();
 
     /* */
     // ssd_face_detector::main().unwrap();
 
-    /*drawing */
-    // drawing::main().unwrap();
-    // mat_op::main().unwrap();
-
+    /*b */
+    binarization::main().unwrap();
     /*google_net*/
     // google_net::main().unwrap();
 

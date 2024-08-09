@@ -5,7 +5,10 @@ use opencv::{
     imgcodecs::{self, IMREAD_GRAYSCALE},
     imgproc, Result,
 };
+/* keyboard
 
+
+*/
 pub fn main() -> Result<()> {
     keyboard()?;
     Ok(())
@@ -27,6 +30,7 @@ fn keyboard() -> Result<()> {
 
     loop {
         if wait_key(0)? as u8 as char == 's' {
+            println!("{}", "이미지 반전");
             if is_inverted {
                 // 이미지 반전
                 bitwise_not(&img, &mut b, &a)?;

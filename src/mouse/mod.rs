@@ -36,7 +36,7 @@ EVENT_FLAG_ALTKEY :ALT 왼쪽버튼이 눌려있음
 */
 
 pub fn main() -> Result<()> {
-    let mut img: Arc<Mutex<Mat>> = Arc::new(Mutex::new(imgcodecs::imread("./img/face.jpg", IMREAD_COLOR)?));
+    let  img: Arc<Mutex<Mat>> = Arc::new(Mutex::new(imgcodecs::imread("./img/face1.jpeg", IMREAD_COLOR)?));
   
     highgui::named_window("img", WINDOW_AUTOSIZE)?;
 

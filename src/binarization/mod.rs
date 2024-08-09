@@ -5,12 +5,13 @@ use opencv::{
 use std::sync::{Arc, Mutex};
 
 pub fn main() -> Result<()> {
-    morphology()?;
+    // morphology()?;
+    adaptive()?;
     Ok(())
 }
 fn threshold() -> Result<()> {
     let img = Arc::new(Mutex::new(imgcodecs::imread(
-        "./img/face.jpg",
+        "./img/face1.jpeg",
         imgcodecs::IMREAD_COLOR,
     )?));
     let img_clone = Arc::clone(&img);
@@ -45,7 +46,7 @@ fn threshold() -> Result<()> {
 }
 fn adaptive() -> Result<()> {
     let img = Arc::new(Mutex::new(imgcodecs::imread(
-        "./img/face.jpg",
+        "./img/face1.jpeg",
         imgcodecs::IMREAD_GRAYSCALE,
     )?));
     let img_clone = Arc::clone(&img);
@@ -82,7 +83,7 @@ fn adaptive() -> Result<()> {
 }
 fn morphology() -> Result<()> {
     let img = imgcodecs::imread(
-        "./img/face.jpg",
+        "./img/face1.jpeg",
         imgcodecs::IMREAD_GRAYSCALE,
     )?;
     highgui::imshow("dst", &img).unwrap();
