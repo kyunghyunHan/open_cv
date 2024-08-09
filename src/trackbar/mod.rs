@@ -14,9 +14,7 @@ pub fn main() -> Result<()> {
         Mat::zeros(400, 400, CV_8UC1).unwrap().to_mat().unwrap(),
     ));
 
-    // let img_clone = Arc::clone(&img);
     let img_clone = Arc::clone(&img);
-
     named_window("image", WINDOW_AUTOSIZE)?;
     create_trackbar(
         "level",
@@ -26,17 +24,15 @@ pub fn main() -> Result<()> {
         Some(Box::new(move |pos: i32| {
 
             let mut img_guard = img_clone.lock().unwrap();
-            // img_guard.set_to(pos,&no_array()).unwrap();
-
+            img_guard.set_to(&Scalar::from(pos * 16),&no_array()).unwrap();
             imshow("image", &*img_guard).unwrap();
 
 
         })),
     )?;
-    // imshow("image", &img.lock().unwrap()).unwrap();
-    imshow("img", &*img.lock().unwrap())?;
+    imshow("image", &*img.lock().unwrap())?;
 
-    wait_key(10000)?;
+    wait_key(0)?;
     
     Ok(())
 }

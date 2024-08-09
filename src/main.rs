@@ -63,7 +63,7 @@ pub fn main() {
 //    mouse::main().unwrap();
     
     /*trackbar */
-    // trackbar::main().unwrap();
+    trackbar::main().unwrap();
  
     /*tracker */
     // tracker::main().unwrap();
@@ -72,7 +72,7 @@ pub fn main() {
     // ssd_face_detector::main().unwrap();
 
     /*b */
-    binarization::main().unwrap();
+    // binarization::main().unwrap();
     /*google_net*/
     // google_net::main().unwrap();
 
