@@ -42,6 +42,7 @@ mod warping;
 mod yolo;
 mod yolo_image;
 mod trackbar;
+mod stereo_vision;
 pub fn main() {
 
 
@@ -69,7 +70,7 @@ pub fn main() {
 
     /*File Storage */
 
-    file_storage::main().unwrap();
+    // file_storage::main().unwrap();
     /*tracker */
     // tracker::main().unwrap();
 
@@ -93,6 +94,9 @@ pub fn main() {
     // warping::main().unwrap();
 
     // image_gif::main().unwrap();
+
+    /*stereo_vision */
+    stereo_vision::main().unwrap();
 
     
 }

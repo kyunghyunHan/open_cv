@@ -12,6 +12,6 @@ fn write_data() -> Result<()> {
     let mat1 = Mat::default();
 
     let fs  = FileStorage::new(name, FileStorage_WRITE, "")?;
-    fs.release();
+    // fs.release();
     Ok(())
 }
