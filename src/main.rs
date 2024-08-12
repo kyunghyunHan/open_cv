@@ -48,7 +48,7 @@ pub fn main() {
 
     /*Mat OP */
 
-    // mat_op::main().unwrap();
+    mat_op::main().unwrap();
 
     /*Video Capture */
     // video::main().unwrap();
@@ -96,7 +96,7 @@ pub fn main() {
     // image_gif::main().unwrap();
 
     /*stereo_vision */
-    stereo_vision::main().unwrap();
+    // stereo_vision::main().unwrap();
 
     
 }
