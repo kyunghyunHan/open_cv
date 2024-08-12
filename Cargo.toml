@@ -8,4 +8,6 @@ edition = "2021"
 [dependencies]
 opencv = {version="0.92.2" }
 rand = "0.8.5"
+num-traits = "0.2.19"
+
 
