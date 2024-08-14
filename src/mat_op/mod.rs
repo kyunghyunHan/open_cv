@@ -1,14 +1,70 @@
 /* Mat op */
+/*주요 클래스
+Point
+- 2차원 평면 위에 있는 점의 좌표를 표현하는 클래스
+- 2차원 좌표를 나타내는 x와 y라는 변수를 가지고 있음
+- dot()->내적을 계산
+- ddot()내적을 실수형으로 계산
+- cross() 두 점 사이의 외적을 게산
+- inside() 점의 좌표가 사각형 r 안에 있으면 true를 반환
 
+Size
+- Size는 사각형 영역의 가로와 세로 크기를 나타내는 width와 height멤버 변수를포함
+- area() 함수는 사각형 크기에 해당하는 면적(width x height)을 반환합니다.
+- empty() 유효하지 않는 크기이면 true를 반환
+- width 는 가로크기
+- heigh는 사각형 영역의 세로 크기
+
+
+Rect
+Rect는 사각형의 좌측 상단 점의 좌표를 나타내는 x,y변수와 사각형의 가로 및 세로 크기를 나타내는 width,height변수를 가지고 있습니다.
+tl() =>사각형의 좌측 상단 점의 좌표 반환
+br() => 사각형의 우측 하단 점의 좌표 반환
+size() =>사각형의 크기 정보 반환
+arer() => 사각형의 면적
+empty()=> 유효하지 않는 사각형이면 True
+contains()=>인자로 전달된 pt점이 사각형 내부에 잇으면 true반환
+*/
 use opencv::{
-    prelude::{MatTraitConstManual,MatTraitManual},
-    core::{bitwise_not, no_array, Mat, MatExprTraitConst, MatTrait, MatTraitConst, Rect, Scalar},
+    core::{
+        bitwise_not, no_array, Mat, MatExprTraitConst, MatTrait, MatTraitConst, Point_, Range,
+        Rect, Rect_, Scalar, Size, Vector, CV_8UC3,
+    },
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_COLOR},
+    prelude::{MatTraitConstManual, MatTraitManual},
     Result,
 };
 use std::sync::Arc;
 use std::sync::Mutex;
+
+fn point_fn() -> Result<()> {
+    let mut pt1: Point_<i32> = Point_::default(); //0,0
+    pt1.x = 10;
+    pt1.y = 10;
+
+    let pt2 = Point_::from((10, 10));
+    Ok(())
+}
+fn size_fn() -> Result<()> {
+    let sz1 = Size::from((10, 20));
+    let mut sz2 = Size::default();
+    sz2.width = 5;
+    sz2.height = 10;
+
+    Ok(())
+}
+fn rect_fn() -> Result<()> {
+    let mut rect: Rect_<i32> = Rect_::default();
+    rect.x= 10;
+    rect.y= 20;
+    rect.width= 10;
+    rect.height= 20;
+
+    let rc2 = Rect_::from((10,10,10,10));
+
+    Ok(())
+}
 fn mat_op1() -> Result<()> {
     let mut img1 = imread("./img/face1.jpeg", IMREAD_COLOR)?;
     if img1.empty() {
@@ -69,7 +125,6 @@ fn mat_op2() -> Result<()> {
 //     let mut img2_bn = Mat::default();
 //     // img2를 반전
 //     bitwise_not(&img2, &mut img2_bn, &Mat::default())?;
-  
 
 //     imshow("img1", &img1)?;
 //     imshow("img2", &img2_bn)?;
@@ -85,35 +140,20 @@ fn mat_op3() -> Result<()> {
         println!("Image load failed!");
         return Ok(());
     }
+    let mut range_vector = Vector::new();
 
-    // 이미지 크기와 영역 정의
-    let rect = Rect::new(220, 120, 340, 240);
+    // 범위 추가
+    range_vector.push(Range::new(0, 10)?);
+    range_vector.push(Range::new(10, 20)?);
 
-    // 자른 영역의 이미지 생성
-    let mut img2 = Mat::zeros(rect.height, rect.width, img1.typ())?.to_mat()?;
-    let mut img3 = img2.clone();
-
-    // 직접 데이터 접근 및 복사
-    let src_roi = img1.roi(rect)?.try_clone()?;
-    let dst_size = img2.size()?;
-    let src_size = src_roi.size()?;
-    let src_ptr = src_roi.data_typed::<u8>()?;
-    let  dst_ptr = img2.data_typed_mut::<u8>()?;
-
-    for y in 0..src_size.height {
-        let src_row = &src_ptr[(y as usize * src_size.width as usize * 3) as usize..];
-        let dst_row = &mut dst_ptr[(y as usize* dst_size.width as usize * 3) as usize..];
-        dst_row.copy_from_slice(&src_row[..src_size.width as usize * 3]);
-    }
-
-    // 반전
-    let mut img2_bn = Mat::default();
-    bitwise_not(&img2, &mut img2_bn, &Mat::default())?;
+    // `&Vector<Range>` 참조 얻기
+    let range_vector_ref: &Vector<Range> = &range_vector;
+    let a = img1.ranges(&range_vector_ref).unwrap().clone_pointee();
+    let img2 = Mat::default();
 
     // 결과 출력
     imshow("img1", &img1)?;
-    imshow("img2", &img2)?;
-    imshow("img3", &img3)?;
+    imshow("img2", &a)?;
 
     wait_key(0)?;
     destroy_all_windows()?;
@@ -124,7 +164,9 @@ fn mat_op3() -> Result<()> {
 pub fn main() -> Result<()> {
     // mat_op1()?;
     // mat_op2()?;
-    mat_op3()?;
+    // mat_op3()?;
+    let rc2 = Rect_::from((10,10,10,10));
+    println!("{:?}",rc2);
 
     Ok(())
 }
