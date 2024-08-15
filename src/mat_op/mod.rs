@@ -24,11 +24,63 @@ size() =>사각형의 크기 정보 반환
 arer() => 사각형의 면적
 empty()=> 유효하지 않는 사각형이면 True
 contains()=>인자로 전달된 pt점이 사각형 내부에 잇으면 true반환
+
+rc1에 size(50 ,40) 을 더하면 rc1의 가로 크기와 세로 크기가 각각 50과 40만큼 증가
+rc4는 rc2에서 Point (10,10 )만큼 증가
+&연산은 두 사각형이 교차하는 사각형 영역
+| 연산은 두 사격형을 모두 포함하는 최소 크기의 사각형을 반환
+
+RotatedRect클래스
+회전된 사각형을 포현하는 클래스
+회전된 사각형의 중심 좌표를 나타내는 center,
+사각형의 가로 및 세로 크기를 나태내는 size
+회전 각도 정보를 표현하는 angle을 멤버 변수로 가짐
+
+-points는 회전된 사각형의 네 꼭지점 좌표를 pts에 인자에 담아 반환
+- bounddingRect()함수는 회전된 사각형의을 포함하는 최소 크기의 사각형 정보를 반환(정수 단위)
+- bounddingRect2f()함수는 회전된 사각형의을 포함하는 최소 크기의 사각형 정보를 반환(실수단위)
+
+Range
+
+범위 또는 구간을 표현하는 클래스
+시작과 끝을 나타내는 start와 end멤벼 변수를 가지고 있음
+size() = 범위크기 (end -start)반환
+empty() start와 end가 같으면 true반환
+all() start=INN_MIN ,end =INT_MAX로 설정한 Range객체 반환
+
+
+
+Mat
+
+일반적인 2차원 행렬 뿐만 아니라 고차원 행렬까지 표현
+한개이상의 채널을 가질수 있음
+정수,실수,복소수,등으로 구성된 행렬 또는 Vector을 저장 가능
+컬러영상 또는 크레이스케일 영상 저장 가능
+경우에 따라서 Vector Field ,Poind cloud,Tensor,histogram등을 저장하는 용도로 사용
+-dims Mat행렬의 차원을 나타냄
+- rows,cols 2차원 행렬의 크기를 나타냄 3차원 이상에서부터는 -1이 저장,3차원 이상부터는 size멤버 변수를 이용하여 참조 가능
+- data 는 행렬의 원소데이터가 저장되어 있는 메모리 공간을 가리키는 포인터형 멤버 변수 만약 하우것도 저장도있지 않으면 None값을 가짐
+- CV_8U   0
+- CV_8S   1
+- CV_16U  2
+- CV_16S  3
+- CV_32S  4
+- CV_32F  5
+- CV_64F  6
+- CV_16F  7
+
+- Mat행렬 원소는 하나의 값을 가질수도 있고 여러개의 구성된 값을 가질수도 있음,Mat행렬원소를 구성하는 각각의 값을 채널 이라고 부름
+- 하나의 행렬을 구성하는 각 채널은 모두 같은 자료형 사용해야함 예 그레이스케일 영상은 하나의 픽셀이 밝기 정보 하나만 사용하므로 1채널 행렬로 표현
+- 컬러 영상의 경우 하나의 픽셀이 BGR세개의 색상정보를 가지고 있으므로 3채널 행렬로 표현
+- Mat행렬의 깊이 정보와 채널 수 정보를 합쳐서 Mat객체의 type이라 함
+- 행렬 뒤에 깊이 표현 매크도 뒤에 C1,C3같은 채널 정보가 추가로 붙어진 형태 즉 CV_8UC1타입은 8비트 u8자료형을 사용하고 채널이 한개인 행렬또는 영상을 의미
+- BGR세개의 생삭 성분을 가지고 있는 컬러 영상은 u8자료형 및 세개의 채널을 가지고 있기 떄문에 CV_8UC3 타입입니다.
+- 복소수처럼 두개의 실수 값을 사용하고 있는 행렬은  CV_32FC2타입으로 만들수 있음
 */
 use opencv::{
     core::{
-        bitwise_not, no_array, Mat, MatExprTraitConst, MatTrait, MatTraitConst, Point_, Range,
-        Rect, Rect_, Scalar, Size, Vector, CV_8UC3,
+        bitwise_not, no_array, Mat, MatExprTraitConst, MatTrait, MatTraitConst, Point2f, Point_,
+        Range, Rect, Rect_, RotatedRect, Scalar, Size, Size2f, Size_, Vector, CV_8UC1, CV_8UC3,
     },
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_COLOR},
@@ -44,6 +96,8 @@ fn point_fn() -> Result<()> {
     pt1.y = 10;
 
     let pt2 = Point_::from((10, 10));
+    println!("{:?}", pt1);
+    println!("{:?}", pt2);
     Ok(())
 }
 fn size_fn() -> Result<()> {
@@ -51,17 +105,80 @@ fn size_fn() -> Result<()> {
     let mut sz2 = Size::default();
     sz2.width = 5;
     sz2.height = 10;
+    println!("{:?}", sz1);
+    println!("{:?}", sz2);
+    Ok(())
+}
+
+fn rect_fn() -> Result<()> {
+    let mut rc1: Rect_<i32> = Rect_::default(); //{ x: 0, y: 0, width: 0, height: 0 }
+
+    //[0 * 0 from (0,0)]
+    let rc2 = Rect_::from((10, 10, 60, 40));
+    //{ x: 10, y: 10, width: 60, height: 40 }
+
+    let rc3 = rc1 + Size::from((50, 40)); //{ x: 0, y: 0, width: 50, height: 40 }
+
+    let rc4 = rc2 + Point_::from((10, 10)); //{ x: 20, y: 20, width: 60, height: 40 }
+    let rc5 = rc3 & rc4; //{ x: 20, y: 20, width: 30, height: 20 }
+    let rc6 = rc3 | rc4; //{ x: 0, y: 0, width: 80, height: 60 }
+
+    println!("{:?}", rc1);
+    println!("{:?}", rc2);
+    println!("{:?}", rc3);
+    println!("{:?}", rc4);
+    println!("{:?}", rc5);
+    println!("{:?}", rc6);
 
     Ok(())
 }
-fn rect_fn() -> Result<()> {
-    let mut rect: Rect_<i32> = Rect_::default();
-    rect.x= 10;
-    rect.y= 20;
-    rect.width= 10;
-    rect.height= 20;
 
-    let rc2 = Rect_::from((10,10,10,10));
+fn rotated_rect_fn() -> Result<()> {
+    //중심 좌표가 (40,30) 크기는 40x20 시게 방향으로 30 % 만큼 회전된 사각형
+    let rr1: RotatedRect =
+        RotatedRect::new(Point2f::from((40., 30.)), Size2f::from((40., 20.)), 30.)?;
+    println!("{:?}", rr1);
+    //배열에 제 꼭지점 좌표가 pts배열에 저장
+    let mut pts: [Point2f; 4] = [Default::default(); 4];
+    rr1.points(&mut pts)?;
+    println!("{:?}", pts);
+    //경우에 따라서 회전된 사각형을 감사는 최소 크기의 사각형 정보가 필요
+    //특정 개체를 감싸는 최소 크기의 사각형을 bounding box함
+    let br = rr1.bounding_rect()?;
+    //[0 * 0 from (0,0)]
+    // let rr2 = Rect_::from((10, 10, 60, 40));
+    // //{ x: 10, y: 10, width: 60, height: 40 }
+
+    // let rr3 = rr1 +Size::from((50,40));//{ x: 0, y: 0, width: 50, height: 40 }
+
+    // let rr4 =rr2+Point_::from((10,10));//{ x: 20, y: 20, width: 60, height: 40 }
+    // let rr5 = rr3 & rr4;     //{ x: 20, y: 20, width: 30, height: 20 }
+    // let rr6  =rr3 | rr4;    //{ x: 0, y: 0, width: 80, height: 60 }
+
+    // println!("{:?}", rr2);
+    // println!("{:?}", rr3);
+    // println!("{:?}", rr4);
+    // println!("{:?}", rr5);
+    // println!("{:?}", rr6);
+
+    Ok(())
+}
+
+fn mat_fn() -> Result<()> {
+    //단순히 Mat타입 선언
+    let img1: Mat = Mat::default();
+    //Mat클래스에 영상의 크기를 지정할떄 가로세로 순이 아닌 세로 가로 순
+    let img2: Mat = unsafe { Mat::new_nd(&[480, 640], CV_8UC1)? }; //{ width: 640, height: 480 }
+    let img3: Mat = unsafe { Mat::new_nd(&[480, 640], CV_8UC3)? };
+    //Size는가로세로 크기순으로 크기를 지정하
+    //그런데 이처럼 행렬의 크기와 타입을 지정하여 Mat객체를 생성할 경우 행렬의 모든 원소는 garbage value라는 임의의 값으로 채워지게 됨
+    //그러므로 Mat객체를 생성함과 동시에 모든 원소값을 특정 값으로 초기화 하여 사용하는 것이 안전
+    let img4 = unsafe { Mat::new_size(Size_::from((640, 480)), CV_8UC3)? };
+
+    let img5 = Mat::new_size_with_default(Size::new(640, 480), CV_8UC1, Scalar::all(128.0))?;
+   
+    println!("{:?}", img3);
+    println!("{:?}", img4);
 
     Ok(())
 }
@@ -165,8 +282,8 @@ pub fn main() -> Result<()> {
     // mat_op1()?;
     // mat_op2()?;
     // mat_op3()?;
-    let rc2 = Rect_::from((10,10,10,10));
-    println!("{:?}",rc2);
-
+    // rect_fn()?;
+    // rotated_rect_fn()?;
+    mat_fn()?;
     Ok(())
 }
