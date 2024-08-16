@@ -83,15 +83,14 @@ use opencv::{
         Range, Rect, Rect_, RotatedRect, Scalar, Size, Size2f, Size_, Vector, CV_32FC1, CV_32SC1,
         CV_8UC1, CV_8UC3,
     },
-    
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_COLOR},
     prelude::{MatTraitConstManual, MatTraitManual},
     Result,
 };
+use std::ffi::c_void;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::ffi::c_void;
 fn point_fn() -> Result<()> {
     let mut pt1: Point_<i32> = Point_::default(); //0,0
     pt1.x = 10;
@@ -195,24 +194,71 @@ fn mat_fn() -> Result<()> {
 
     // float data[]={1,2,3,4,5,6}
     // Mat mat4(2,3,CV_32FC1)
-    // let mat4 =Mat::new_rows_cols_with_data(rows, cols, data)?.try_clone();
- 
-    println!("{:?}", img3);
+    let data = [1., 2., 3., 4., 5., 6.];
+    //이 방법은 Boxed<Mat>을반환 완전한 Mat으로 가져오려면 복제를 해야함
+    //clone_pointee은 Mat내부 데이터를 복제하여 새로운 Mat객체를 생성하며 이 메서드는 원본 데이터와 완전히 독립적인 복사본을 만듭니다.
+    //try_clone은 기본적으로 Mat객체의 헤더를 복제하고  내부 데이터는 참조 카운팅을 통해 공휴하기때문에 두 객체는 동일한 데이터를 가리키며 기존 데이터가 바뀌면 같이 바뀌기 때문에 데이터 복사를 피하고 메모리 사용을 줄이고 싶을떄 사용합니다.
+    //외부 배열을 행렬 원소 값으로 사용하고자 할 경우 외부 배열 크기와 생성할 행렬 원소 개수는 같아야함,서로 사용하는 자료형도 같아야함
+    // let mat4 =Mat::new_rows_cols_with_data(2, 3, &data)?;
+    // let mat4 =Mat::new_rows_cols_with_data(2, 3, &data)?.clone_pointee();
+    let mut mat4 = Mat::new_rows_cols_with_data(2, 3, &data)?.try_clone()?;
+
+    let mut mat5 = unsafe { Mat::new_rows_cols(2, 3, CV_32FC1)? };
+    let data: [f32; 6] = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
+    for (i, &value) in data.iter().enumerate() {
+        *mat5.at_mut::<f32>(i as i32)? = value;
+    }
+    let data: [[f32; 6]; 6] = [
+        [1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        [1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        [1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        [1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        [1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        [1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+    ];
+    let data: Vec<Vec<f32>> = vec![
+        vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+    ];
+    let mat5 = Mat::from_slice_2d(&data)?;
+    //이미 데이터가 할당 되어 있는 객체에 create함수를 호출할 경우 create함수의 인자로 지정한 행렬크기와 타입이 기존 행렬과 같으면 별다른 동작을 하지 않지만 새로 만들 행렬의 크기또는 타입이 기존 행렬과 다를 경우 기존 메모리 공간을 해제한 후 새로운 행렬 데이터 저장을 위한 메모리 공간을 할당한 할당
+    //create함수는 초기화 하는 기능은 없기때문에 핼렬 전체의 원소 값을 초기화 하고싶다면 set_to 함수를 사용해야함
+    unsafe { mat4.create_size(Size::from((256, 256)), CV_8UC3)? };
+
+    println!("{:?}", mat4);
     println!("{:?}", img4);
 
     Ok(())
 }
 
-
 fn mat_op1() -> Result<()> {
-    let mut img1 = imread("./img/face1.jpeg", IMREAD_COLOR)?;
-    if img1.empty() {
-        println!("{}", "image load faild!");
-        std::process::exit(0);
+    let img1 = Mat::default();
+    let img2 = unsafe { Mat::new_rows_cols(480, 640, CV_8UC1)? };
+    let img3 = unsafe { Mat::new_rows_cols(480, 640, CV_8UC3)? };
+    let img4 = unsafe { Mat::new_size(Size_::from((640, 480)), CV_8UC3)? };
+    let img5 = Mat::new_size_with_default(Size::new(640, 480), CV_8UC1, Scalar::all(128.0))?; //모든 픽셀값이 128로 지정된 그레이스케일 영 상
+    let img6 = Mat::new_size_with_default(Size::new(640, 480), CV_8UC3, Scalar::from((0, 0, 255)))?; //모든 픽셀값이 빨간색으로 지정된 컬러 영상
+
+    let mat1 = Mat::zeros(3, 3, CV_32SC1)?.to_mat()?;
+    let mat2 = Mat::ones(3, 3, CV_32FC1)?.to_mat()?;
+    let mat3 = Mat::eye(3, 3, CV_32FC1)?.to_mat()?;
+
+    let data = [1., 2., 3., 4., 5., 6.];
+    let mut mat4 = Mat::new_rows_cols_with_data(2, 3, &data)?.try_clone()?;
+    let mut mat5 = unsafe { Mat::new_rows_cols(2, 3, CV_32FC1)? };
+    let data: [f32; 6] = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
+    for (i, &value) in data.iter().enumerate() {
+        *mat5.at_mut::<f32>(i as i32)? = value;
     }
-    let img2 = img1.clone();
-    img1.set_to(&Scalar::from((0, 255, 255)), &no_array())?;
-    let img3 = &img1;
+
+    unsafe { mat4.create_size(Size::from((256, 256)), CV_8UC3)? };
+    unsafe { mat5.create_size(Size::from((4, 4)), CV_32FC1)? };
+    mat4.set_scalar(Scalar::from((255, 0, 0)))?;//모든 픽셀을 파란색으로 설정
+    mat5.set_to(&1., &no_array())?;//mat5의 모든 원소 값은 1.로 설정
     imshow("img1", &img1)?;
     imshow("img2", &img2)?;
     imshow("img3", &img3)?;
@@ -222,6 +268,7 @@ fn mat_op1() -> Result<()> {
 }
 
 fn mat_op2() -> Result<()> {
+    //행렬복사
     //사진을 불러와서 img1에 저장
     //Arc:같은 데이터를 여러 참조에서 공유할수 있게 하면서 메모리 안정성을 보장
     //Mutex:동시에 여러 스레드가 Img1에 접근하지 못하게 하여 데이터 경합 문제 방지
@@ -253,52 +300,53 @@ fn mat_op2() -> Result<()> {
     destroy_all_windows()?;
     Ok(())
 }
-// fn mat_op3() -> Result<()> {
-//     let img1 = imread("./img/bike0.png", IMREAD_COLOR)?;
-//     if img1.empty() {
-//         panic!("image load failed");
-//     }
-//     let rect = Rect::new(220, 120, 340, 240);
-//     let img2 = Mat::roi(&img1, rect)?;
-//     let img3 = Mat::roi(&img1, rect)?.try_clone()?;
-//     let mut img2_bn = Mat::default();
-//     // img2를 반전
-//     bitwise_not(&img2, &mut img2_bn, &Mat::default())?;
-
-//     imshow("img1", &img1)?;
-//     imshow("img2", &img2_bn)?;
-//     imshow("img3", &img3)?;
-//     wait_key(0)?;
-//     destroy_all_windows()?;
-//     Ok(())
-// }
 fn mat_op3() -> Result<()> {
-    // 이미지 로드
     let img1 = imread("./img/bike0.png", IMREAD_COLOR)?;
     if img1.empty() {
-        println!("Image load failed!");
-        return Ok(());
+        panic!("image load failed");
     }
-    let mut range_vector = Vector::new();
+    
+    // let rect = Rect::new(220, 120, 340, 240);
+    // let img2 = Mat::roi(&img1, rect)?;
+    // let img3 = Mat::roi(&img1, rect)?.try_clone()?;
+    // let mut img2_bn = Mat::default();
+    // // img2를 반전
+    // bitwise_not(&img2, &mut img2_bn, &Mat::default())?;
 
-    // 범위 추가
-    range_vector.push(Range::new(0, 10)?);
-    range_vector.push(Range::new(10, 20)?);
-
-    // `&Vector<Range>` 참조 얻기
-    let range_vector_ref: &Vector<Range> = &range_vector;
-    let a = img1.ranges(&range_vector_ref).unwrap().clone_pointee();
-    let img2 = Mat::default();
-
-    // 결과 출력
-    imshow("img1", &img1)?;
-    imshow("img2", &a)?;
-
+    // imshow("img1", &img1)?;
+    // imshow("img2", &img2_bn)?;
+    // imshow("img3", &img3)?;
     wait_key(0)?;
     destroy_all_windows()?;
-
     Ok(())
 }
+// fn mat_op3() -> Result<()> {
+//     // 이미지 로드
+//     let img1 = imread("./img/bike0.png", IMREAD_COLOR)?;
+//     if img1.empty() {
+//         println!("Image load failed!");
+//         return Ok(());
+//     }
+//     let mut range_vector = Vector::new();
+
+//     // 범위 추가
+//     range_vector.push(Range::new(0, 10)?);
+//     range_vector.push(Range::new(10, 20)?);
+
+//     // `&Vector<Range>` 참조 얻기
+//     let range_vector_ref: &Vector<Range> = &range_vector;
+//     let a = img1.ranges(&range_vector_ref).unwrap().clone_pointee();
+//     let img2 = Mat::default();
+
+//     // 결과 출력
+//     imshow("img1", &img1)?;
+//     imshow("img2", &a)?;
+
+//     wait_key(0)?;
+//     destroy_all_windows()?;
+
+//     Ok(())
+// }
 
 pub fn main() -> Result<()> {
     // mat_op1()?;
