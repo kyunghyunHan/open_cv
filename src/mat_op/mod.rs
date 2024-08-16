@@ -80,8 +80,10 @@ Mat
 use opencv::{
     core::{
         bitwise_not, no_array, Mat, MatExprTraitConst, MatTrait, MatTraitConst, Point2f, Point_,
-        Range, Rect, Rect_, RotatedRect, Scalar, Size, Size2f, Size_, Vector, CV_8UC1, CV_8UC3,
+        Range, Rect, Rect_, RotatedRect, Scalar, Size, Size2f, Size_, Vector, CV_32FC1, CV_32SC1,
+        CV_8UC1, CV_8UC3,
     },
+    
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_COLOR},
     prelude::{MatTraitConstManual, MatTraitManual},
@@ -89,7 +91,7 @@ use opencv::{
 };
 use std::sync::Arc;
 use std::sync::Mutex;
-
+use std::ffi::c_void;
 fn point_fn() -> Result<()> {
     let mut pt1: Point_<i32> = Point_::default(); //0,0
     pt1.x = 10;
@@ -173,15 +175,35 @@ fn mat_fn() -> Result<()> {
     //Size는가로세로 크기순으로 크기를 지정하
     //그런데 이처럼 행렬의 크기와 타입을 지정하여 Mat객체를 생성할 경우 행렬의 모든 원소는 garbage value라는 임의의 값으로 채워지게 됨
     //그러므로 Mat객체를 생성함과 동시에 모든 원소값을 특정 값으로 초기화 하여 사용하는 것이 안전
+    //Scalar는 네개의 실수 값을 저장 가능한 클래스이며 주료 영상의 픽셀 값을 표현하는 용도로 사용
     let img4 = unsafe { Mat::new_size(Size_::from((640, 480)), CV_8UC3)? };
 
-    let img5 = Mat::new_size_with_default(Size::new(640, 480), CV_8UC1, Scalar::all(128.0))?;
-   
+    let img5 = Mat::new_size_with_default(Size::new(640, 480), CV_8UC1, Scalar::all(128.0))?; //모든 픽셀값이 128로 지정된 그레이스케일 영 상
+    let img6 = Mat::new_size_with_default(Size::new(640, 480), CV_8UC3, Scalar::from((0, 0, 255)))?; //모든 픽셀값이 빨간색으로 지정된 컬러 영상
+                                                                                                     //Scalar 클래스를 이용하여  컬러 영상의 색상을 지정할떄는 BGR색상 순으로 값을 지정
+                                                                                                     //새로운 행렬을 생성할떄 모든 원소값을 0으로 초기화 하는 경우가 많아 Mat클래스에 Scalar을 0으로 지정, 이러한 용도로 Mat::zero()함수 사용
+                                                                                                     //MatExpr은 행렬의 대수연산을 표현하는 클래스
+    let mat1 = Mat::zeros(3, 3, CV_32SC1)?.to_mat()?; //zerors()를 사용할 경우 MatExpr클래스로 반환되기 떄문에 to Mat()함수를 사용해 Mat으로 변환해주어야함
+                                                      //모든 원소기 1로 초기화된 행렬을 생성하려면 Mat::ones()
+                                                      //또한 행렬 연산에서 자주 사용되는 단위행렬을 생성하려면 Mat::eye()를 사용
+
+    let mat2 = Mat::ones(3, 3, CV_32FC1)?.to_mat()?;
+    let mat3 = Mat::eye(3, 3, CV_32FC1)?.to_mat()?;
+
+    //Mat객체를 생성할떄 행렬원소를 저장할 메모리 공간을 새로 할당하는것이 아니라 기존에 이미 할당되어 있는 메모리 공간의 데이터를 행렬 원소 값으로 사용가능
+    //외부 메모리 공간을 활용하여 Mat객체를 생성한다는 것은 자체적인 메모리 할당을 수행하지 않고 외부 메모리를 참조하는 것이기 떄문에 객체 생성이 빠른 장점이 있음
+
+    // float data[]={1,2,3,4,5,6}
+    // Mat mat4(2,3,CV_32FC1)
+    // let mat4 =Mat::new_rows_cols_with_data(rows, cols, data)?.try_clone();
+ 
     println!("{:?}", img3);
     println!("{:?}", img4);
 
     Ok(())
 }
+
+
 fn mat_op1() -> Result<()> {
     let mut img1 = imread("./img/face1.jpeg", IMREAD_COLOR)?;
     if img1.empty() {
