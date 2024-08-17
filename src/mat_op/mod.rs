@@ -305,7 +305,7 @@ fn mat_op3() -> Result<()> {
     if img1.empty() {
         panic!("image load failed");
     }
-    
+    // /
     // let rect = Rect::new(220, 120, 340, 240);
     // let img2 = Mat::roi(&img1, rect)?;
     // let img3 = Mat::roi(&img1, rect)?.try_clone()?;
