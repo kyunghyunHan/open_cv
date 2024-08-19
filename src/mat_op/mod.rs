@@ -80,8 +80,8 @@ Mat
 use opencv::{
     core::{
         bitwise_not, no_array, Mat, MatExprTraitConst, MatTrait, MatTraitConst, Point2f, Point_,
-        Range, Rect, Rect_, RotatedRect, Scalar, Size, Size2f, Size_, Vector, CV_32FC1, CV_32SC1,
-        CV_8UC1, CV_8UC3,
+        Range, Rect, Rect_, RotatedRect, Scalar, Size, Size2f, Size_, Vec3b, Vector, CV_32FC1,
+        CV_32SC1, CV_8UC1, CV_8UC3,
     },
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_COLOR},
@@ -257,8 +257,8 @@ fn mat_op1() -> Result<()> {
 
     unsafe { mat4.create_size(Size::from((256, 256)), CV_8UC3)? };
     unsafe { mat5.create_size(Size::from((4, 4)), CV_32FC1)? };
-    mat4.set_scalar(Scalar::from((255, 0, 0)))?;//모든 픽셀을 파란색으로 설정
-    mat5.set_to(&1., &no_array())?;//mat5의 모든 원소 값은 1.로 설정
+    mat4.set_scalar(Scalar::from((255, 0, 0)))?; //모든 픽셀을 파란색으로 설정
+    mat5.set_to(&1., &no_array())?; //mat5의 모든 원소 값은 1.로 설정
     imshow("img1", &img1)?;
     imshow("img2", &img2)?;
     imshow("img3", &img3)?;
@@ -300,22 +300,26 @@ fn mat_op2() -> Result<()> {
     destroy_all_windows()?;
     Ok(())
 }
+
 fn mat_op3() -> Result<()> {
-    let img1 = imread("./img/bike0.png", IMREAD_COLOR)?;
+    let mut img1 = imread("./img/bike0.png", IMREAD_COLOR)?;
     if img1.empty() {
         panic!("image load failed");
     }
-    // /
-    // let rect = Rect::new(220, 120, 340, 240);
-    // let img2 = Mat::roi(&img1, rect)?;
-    // let img3 = Mat::roi(&img1, rect)?.try_clone()?;
-    // let mut img2_bn = Mat::default();
-    // // img2를 반전
-    // bitwise_not(&img2, &mut img2_bn, &Mat::default())?;
 
-    // imshow("img1", &img1)?;
-    // imshow("img2", &img2_bn)?;
-    // imshow("img3", &img3)?;
+    // 부분 행렬을 참조하는 방법
+    let rect = Rect::new(220, 120, 340, 240);
+    for y in rect.y..rect.y + rect.height {
+        for x in rect.x..rect.x + rect.width {
+            let pixel = img1.at_2d_mut::<Vec3b>(y, x)?;
+            // 예를 들어, 픽셀 색상을 반전시킵니다.
+            *pixel = Vec3b::from([255 - pixel[0], 255 - pixel[1], 255 - pixel[2]]);
+        }
+    }
+
+    // img1에 반영된 결과를 보여줍니다.
+    imshow("img1", &img1)?;
+
     wait_key(0)?;
     destroy_all_windows()?;
     Ok(())
@@ -351,9 +355,9 @@ fn mat_op3() -> Result<()> {
 pub fn main() -> Result<()> {
     // mat_op1()?;
     // mat_op2()?;
-    // mat_op3()?;
+    mat_op3()?;
     // rect_fn()?;
     // rotated_rect_fn()?;
-    mat_fn()?;
+    // mat_fn()?;
     Ok(())
 }
