@@ -79,9 +79,9 @@ Mat
 */
 use opencv::{
     core::{
-        bitwise_not, no_array, Mat, MatExprTraitConst, MatTrait, MatTraitConst, Point2f, Point_,
-        Range, Rect, Rect_, RotatedRect, Scalar, Size, Size2f, Size_, Vec3b, Vector, CV_32FC1,
-        CV_32SC1, CV_8UC1, CV_8UC3,
+        bitwise_not, no_array, Mat, MatConstIterator, MatExprTraitConst, MatTrait, MatTraitConst,
+        Point2f, Point_, Range, Rect, Rect_, RotatedRect, Scalar, Size, Size2f, Size_, Vec3b,
+        Vector, CV_32FC1, CV_32SC1, CV_8UC1, CV_8UC3,
     },
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_COLOR},
@@ -324,38 +324,32 @@ fn mat_op3() -> Result<()> {
     destroy_all_windows()?;
     Ok(())
 }
-// fn mat_op3() -> Result<()> {
-//     // 이미지 로드
-//     let img1 = imread("./img/bike0.png", IMREAD_COLOR)?;
-//     if img1.empty() {
-//         println!("Image load failed!");
-//         return Ok(());
-//     }
-//     let mut range_vector = Vector::new();
+fn mat_op4() -> Result<()> {
+    let mut mat1 = Mat::zeros(3, 4, CV_8UC1)?.to_mat()?;
+    //행렬의 특정 위치에 있는 값을 참조하여 값을 수정하는 코드
+    for j in 0..mat1.rows() {
+        for i in 0..mat1.cols() {
+            *mat1.at_2d_mut::<u8>(j, i)? += 1;
+        }
+    }
+    //특정 부분의 좌표의 포인트를 얻어 그 값을 수정하는 코드 unsafe를 사용하기 떄문에  안정성에서는 조금 벗어나 포인터를 수정하는 방법
+    for j in 0..mat1.rows() {
+        for i in 0..mat1.cols() {
+            let p = mat1.ptr_2d_mut(j, i)?;
+            unsafe {
+                *p += 1;
+            }
+        }
+    }
 
-//     // 범위 추가
-//     range_vector.push(Range::new(0, 10)?);
-//     range_vector.push(Range::new(10, 20)?);
-
-//     // `&Vector<Range>` 참조 얻기
-//     let range_vector_ref: &Vector<Range> = &range_vector;
-//     let a = img1.ranges(&range_vector_ref).unwrap().clone_pointee();
-//     let img2 = Mat::default();
-
-//     // 결과 출력
-//     imshow("img1", &img1)?;
-//     imshow("img2", &a)?;
-
-//     wait_key(0)?;
-//     destroy_all_windows()?;
-
-//     Ok(())
-// }
+    Ok(())
+}
 
 pub fn main() -> Result<()> {
     // mat_op1()?;
     // mat_op2()?;
-    mat_op3()?;
+    // mat_op3()?;
+    mat_op4()?;
     // rect_fn()?;
     // rotated_rect_fn()?;
     // mat_fn()?;
