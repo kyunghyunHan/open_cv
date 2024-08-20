@@ -76,21 +76,35 @@ Mat
 - 행렬 뒤에 깊이 표현 매크도 뒤에 C1,C3같은 채널 정보가 추가로 붙어진 형태 즉 CV_8UC1타입은 8비트 u8자료형을 사용하고 채널이 한개인 행렬또는 영상을 의미
 - BGR세개의 생삭 성분을 가지고 있는 컬러 영상은 u8자료형 및 세개의 채널을 가지고 있기 떄문에 CV_8UC3 타입입니다.
 - 복소수처럼 두개의 실수 값을 사용하고 있는 행렬은  CV_32FC2타입으로 만들수 있음
+
+
+
+행렬참조 mat_04
+
+Mat::channels() 행렬의 채널의 수를 반환
+Mat::depth() 행렬의 깊이를 반환
+Mat::elemSize() 한개의 원소가 차지하는 메모리 크기를 바이트 단위로 반환(CV_32SC3타입 행렬의 경우 4x3=12)
+Mat::elemSize1() 하나의 채널에서 한개의 원소가 차지하는 메모리 크기를 바이트 단위로 반환(CV_32SC3타입의 경우 4를반환
+Mat::empty() 비어있는 행렬이면 true
+Mat::isContinuous() 각행의 원소가 연속적으로 저장되어 있으면 true반환
+Mat::isSubmatrix() 행렬이 다른 행렬의 부분 행렬이면 true 를반환
+Mat::size() 행렬 크기를 Size타입으로 반환
+Mat::total() 전체 원소 개수 반환
+Mat::type() 행렬의 타입을 반환
 */
+
 use opencv::{
     core::{
-        bitwise_not, no_array, Mat, MatConstIterator, MatExprTraitConst, MatTrait, MatTraitConst,
-        Point2f, Point_, Range, Rect, Rect_, RotatedRect, Scalar, Size, Size2f, Size_, Vec3b,
-        Vector, CV_32FC1, CV_32SC1, CV_8UC1, CV_8UC3,
+        bitwise_not, no_array, Mat, MatConstIterator, MatExprTraitConst, MatTrait, MatTraitConst, Point2f, Point_, Range, Rect, Rect_, RotatedRect, Scalar, Size, Size2f, Size_, Vec3b, Vector, CV_32FC1, CV_32FC3, CV_32FC4, CV_32SC1, CV_8UC1, CV_8UC3, CV_HAL_DFT_REAL_OUTPUT
     },
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_COLOR},
     prelude::{MatTraitConstManual, MatTraitManual},
     Result,
 };
-use std::ffi::c_void;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::{any::Any, ffi::c_void};
 fn point_fn() -> Result<()> {
     let mut pt1: Point_<i32> = Point_::default(); //0,0
     pt1.x = 10;
@@ -344,12 +358,30 @@ fn mat_op4() -> Result<()> {
 
     Ok(())
 }
+pub fn mat_05() -> Result<()> {
+    let mut img1 = imread("./img/bike0.png", IMREAD_COLOR)?;
+    println!("Width:{}", { img1.cols() });
+    println!("Height:{}", { img1.rows() });
+    println!("Channels:{}", { img1.channels() });
+    // println!("Channels:{:?}", { img1 });
 
+    // println!("{:?}",img1.typ());
+    if CV_8UC3 == img1.typ() {
+        println!("{}", "img5 is a grayscale image");
+    } else {
+        println!("{}", "img5 is a truecolor image");
+    }
+
+    let data= [2.,1.414,3.,1.732];
+    let mat1 = Mat::new_rows_cols_with_data(rows, cols, data)?;
+    Ok(())
+}
 pub fn main() -> Result<()> {
     // mat_op1()?;
     // mat_op2()?;
     // mat_op3()?;
-    mat_op4()?;
+    // mat_op4()?;
+    mat_05()?;
     // rect_fn()?;
     // rotated_rect_fn()?;
     // mat_fn()?;
