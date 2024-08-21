@@ -91,11 +91,17 @@ Mat::isSubmatrix() 행렬이 다른 행렬의 부분 행렬이면 true 를반환
 Mat::size() 행렬 크기를 Size타입으로 반환
 Mat::total() 전체 원소 개수 반환
 Mat::type() 행렬의 타입을 반환
+
+
+
 */
 
 use opencv::{
     core::{
-        bitwise_not, no_array, Mat, MatConstIterator, MatExprTraitConst, MatTrait, MatTraitConst, Point2f, Point_, Range, Rect, Rect_, RotatedRect, Scalar, Size, Size2f, Size_, Vec3b, Vector, CV_32FC1, CV_32FC3, CV_32FC4, CV_32SC1, CV_8UC1, CV_8UC3, CV_HAL_DFT_REAL_OUTPUT
+        add_def, bitwise_not, no_array, Mat, MatConstIterator, MatExprTraitConst, MatTrait,
+        MatTraitConst, Point2f, Point_, Range, Rect, Rect_, RotatedRect, Scalar, Size, Size2f,
+        Size_, Vec3b, Vector, CV_32FC1, CV_32FC3, CV_32FC4, CV_32SC1, CV_8UC1, CV_8UC3,
+        CV_HAL_DFT_REAL_OUTPUT, DECOMP_LU,
     },
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_COLOR},
@@ -372,8 +378,32 @@ pub fn mat_05() -> Result<()> {
         println!("{}", "img5 is a truecolor image");
     }
 
-    let data= [2.,1.414,3.,1.732];
-    let mat1 = Mat::new_rows_cols_with_data(rows, cols, data)?;
+    let data = [2., 1.414, 3., 1.732];
+    let mat1 = Mat::new_rows_cols_with_data(2, 2, &data)?;
+
+    println!("{:?}", mat1);
+    Ok(())
+}
+
+pub fn mat_06() -> Result<()> {
+    let data = [1., 2., 3., 4.];
+    let mat1 = Mat::new_rows_cols_with_data(2, 2, &data)?.clone_pointee();
+    println!("{:?}", mat1);
+    //inv: method인자를 통해 역행렬 계산 방법을 지정
+    //DECOMP_LU 가우스 소거법
+    //DECOMP_SVD:특이값 분해방법을 이용하여 의사 역행렬
+    //DECOMP_ELG:고윳값 분해
+    //DECOMP_CHOLESKY 촐레스키
+
+    let mat2 = mat1.inv(DECOMP_LU)?.to_mat()?;
+
+
+    let result = (&mat1 * &mat2).into_result()?.to_mat()?;
+    println!("{:?}", mat1.t());
+    println!("{:?}", result);
+    println!("{:?}", mat2);
+    println!("{:?}", mat2);
+
     Ok(())
 }
 pub fn main() -> Result<()> {
@@ -381,7 +411,8 @@ pub fn main() -> Result<()> {
     // mat_op2()?;
     // mat_op3()?;
     // mat_op4()?;
-    mat_05()?;
+    // mat_05()?;
+    mat_06()?;
     // rect_fn()?;
     // rotated_rect_fn()?;
     // mat_fn()?;
