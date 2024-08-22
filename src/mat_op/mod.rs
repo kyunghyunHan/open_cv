@@ -106,6 +106,7 @@ use opencv::{
     gapi::mul,
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_COLOR},
+    imgproc::resize,
     prelude::{MatTraitConstManual, MatTraitManual},
     Result,
 };
@@ -419,17 +420,12 @@ fn mat_07() -> Result<()> {
     let mut mat3 = Mat::default();
     let scalar = Scalar::all(255.);
 
-    multiply(
-        &Mat::ones(1, 4, CV_8UC1)?,
-        &scalar,
-        &mut mat3,
-        1.0,
-        CV_8UC1,
-    )?;
+    multiply(&Mat::ones(1, 4, CV_8UC1)?, &scalar, &mut mat3, 1.0, CV_8UC1)?;
     mat1.push_back(&mat3)?;
-    println!("{:?}", { mat1 });
-
-    
+    println!("{:?}", { &mat1 });
+    let mut resize_mat = Mat::default();
+    resize(&mat1, &mut resize_mat, Size::from((6, 100)), 0., 0., 0)?;
+    println!("{:?}", { &resize_mat });
 
     Ok(())
 }
@@ -440,6 +436,7 @@ pub fn main() -> Result<()> {
     // mat_op4()?;
     // mat_05()?;
     // mat_06()?;
+    mat_07()?;
     // rect_fn()?;
     // rotated_rect_fn()?;
     // mat_fn()?;
