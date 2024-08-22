@@ -98,12 +98,12 @@ Mat::type() 행렬의 타입을 반환
 
 use opencv::{
     core::{
-        add,
-        add_def, bitwise_not, no_array, Mat, MatConstIterator, MatExprTraitConst, MatTrait,
-        MatTraitConst, Point2f, Point_, Range, Rect, Rect_, RotatedRect, Scalar, Size, Size2f,
-        Size_, Vec3b, Vector, CV_32FC1, CV_32FC3, CV_32FC4, CV_32SC1, CV_8UC1, CV_8UC3,
+        add, add_def, bitwise_not, multiply, no_array, Mat, MatConstIterator, MatExprTraitConst,
+        MatTrait, MatTraitConst, Point2f, Point_, Range, Rect, Rect_, RotatedRect, Scalar, Size,
+        Size2f, Size_, Vec3b, Vector, CV_32FC1, CV_32FC3, CV_32FC4, CV_32SC1, CV_8UC1, CV_8UC3,
         CV_HAL_DFT_REAL_OUTPUT, DECOMP_LU,
     },
+    gapi::mul,
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_COLOR},
     prelude::{MatTraitConstManual, MatTraitManual},
@@ -366,7 +366,7 @@ fn mat_op4() -> Result<()> {
     Ok(())
 }
 pub fn mat_05() -> Result<()> {
-    let mut img1 = imread("./img/bike0.png", IMREAD_COLOR)?;
+    let mut img1: Mat = imread("./img/bike0.png", IMREAD_COLOR)?;
     println!("Width:{}", { img1.cols() });
     println!("Height:{}", { img1.rows() });
     println!("Channels:{}", { img1.channels() });
@@ -406,13 +406,40 @@ pub fn mat_06() -> Result<()> {
 
     Ok(())
 }
+fn mat_07() -> Result<()> {
+    let mut img1: Mat = imread("./img/bike0.png", IMREAD_COLOR)?;
+    let mut img1f = Mat::default();
+    img1.convert_to(&mut img1f, CV_32FC1, 1., 1.)?;
+
+    let data1: [u8; 12] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+    let mut mat1 = Mat::new_rows_cols_with_data(3, 4, &data1)?.clone_pointee();
+    let mat2 = mat1.reshape(0, 1)?;
+    println!("{:?}", { mat2 });
+    let mut mat3 = Mat::default();
+    let scalar = Scalar::all(255.);
+
+    multiply(
+        &Mat::ones(1, 4, CV_8UC1)?,
+        &scalar,
+        &mut mat3,
+        1.0,
+        CV_8UC1,
+    )?;
+    mat1.push_back(&mat3)?;
+    println!("{:?}", { mat1 });
+
+    
+
+    Ok(())
+}
 pub fn main() -> Result<()> {
     // mat_op1()?;
     // mat_op2()?;
     // mat_op3()?;
     // mat_op4()?;
     // mat_05()?;
-    mat_06()?;
+    // mat_06()?;
     // rect_fn()?;
     // rotated_rect_fn()?;
     // mat_fn()?;
