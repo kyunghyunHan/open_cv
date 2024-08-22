@@ -103,7 +103,6 @@ use opencv::{
         Size2f, Size_, Vec3b, Vector, CV_32FC1, CV_32FC3, CV_32FC4, CV_32SC1, CV_8UC1, CV_8UC3,
         CV_HAL_DFT_REAL_OUTPUT, DECOMP_LU,
     },
-    gapi::mul,
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_COLOR},
     imgproc::resize,
@@ -429,6 +428,19 @@ fn mat_07() -> Result<()> {
 
     Ok(())
 }
+fn scalar_op() -> Result<()> {
+    let gray = Scalar::from(128);
+    println!("{:?}", gray);
+
+    let yellow = Scalar::from((0, 255, 255));
+    println!("{:?}", gray);
+    let img1 = Mat::new_rows_cols_with_default(256, 256, CV_8UC3, yellow)?;
+
+    for i in 0..4 {
+        println!("{:?}", yellow.get(i).unwrap());
+    }
+    Ok(())
+}
 pub fn main() -> Result<()> {
     // mat_op1()?;
     // mat_op2()?;
@@ -436,7 +448,8 @@ pub fn main() -> Result<()> {
     // mat_op4()?;
     // mat_05()?;
     // mat_06()?;
-    mat_07()?;
+    // mat_07()?;
+    scalar_op()?;
     // rect_fn()?;
     // rotated_rect_fn()?;
     // mat_fn()?;
