@@ -100,8 +100,8 @@ use opencv::{
     core::{
         add, add_def, bitwise_not, multiply, no_array, Mat, MatConstIterator, MatExprTraitConst,
         MatTrait, MatTraitConst, Point2f, Point_, Range, Rect, Rect_, RotatedRect, Scalar, Size,
-        Size2f, Size_, Vec3b, Vector, CV_32FC1, CV_32FC3, CV_32FC4, CV_32SC1, CV_8UC1, CV_8UC3,
-        CV_HAL_DFT_REAL_OUTPUT, DECOMP_LU,
+        Size2f, Size_, ToInputArray, Vec3b, Vector, _InputArrayTraitConst, CV_32FC1, CV_32FC3,
+        CV_32FC4, CV_32SC1, CV_8UC1, CV_8UC3, CV_HAL_DFT_REAL_OUTPUT, DECOMP_LU,
     },
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_COLOR},
@@ -252,6 +252,12 @@ fn mat_fn() -> Result<()> {
 
     println!("{:?}", mat4);
     println!("{:?}", img4);
+
+
+    //Vector
+
+    //Inputarray
+    //output Array
 
     Ok(())
 }
@@ -441,6 +447,18 @@ fn scalar_op() -> Result<()> {
     }
     Ok(())
 }
+
+fn input_array() -> Result<()> {
+    let data1: [u8; 6] = [1, 2, 3, 4, 5, 6];
+    let mat1 = Mat::new_rows_cols_with_data(2, 3, &data1)?.clone_pointee();
+    println!("{:?}", { mat1.input_array()?.get_mat_def() });
+    let vec1: Vector<f64> = Vector::from(vec![1., 3.4, -2.1]);
+
+    println!("{:?}", { vec1.input_array()?.get_mat_def() });
+
+    Ok(())
+}
+
 pub fn main() -> Result<()> {
     // mat_op1()?;
     // mat_op2()?;
@@ -449,7 +467,8 @@ pub fn main() -> Result<()> {
     // mat_05()?;
     // mat_06()?;
     // mat_07()?;
-    scalar_op()?;
+    // scalar_op()?;
+    input_array()?;
     // rect_fn()?;
     // rotated_rect_fn()?;
     // mat_fn()?;
