@@ -9,6 +9,10 @@ use opencv::{
 };
 /*Video Capture
 
+Video Capture 클래스 => 카메라 또는 동영상 피일로 부터 정지 영상 프레임임을 받아올떄 사용
+동영상에 저장되어 있는 일련의 정지 영상을 프레임 이라 하며 동영상을 처리하는 작업은 동영상에서 프레임을 추출한 후 각각의 프레임에 영상 처리 기법을을 적용하는 형태로 이루어짐
+
+
  API
     CAP_ANY:자동선택
     CAP_V4L,CAP_V4L2 리눅스?
@@ -51,10 +55,10 @@ use opencv::{
     AVC1: Advanced Video코덱
 */
 pub fn main() -> Result<()> {
-    // camera_in()?;
+    camera_in()?;
     // video_in()?;
     // camera_in_video_out()?;
-    video_add_capture()?;
+    // video_add_capture()?;
     Ok(())
 }
 pub fn camera_in() -> Result<()> {
