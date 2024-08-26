@@ -9,10 +9,10 @@ use opencv::{
 };
 /*Video Capture
 
-Video Capture 클래스 => 카메라 또는 동영상 피일로 부터 정지 영상 프레임임을 받아올떄 사용
+Video Capture 클래스 => 카메라 또는 동영상 피일로 부터 정지 영상 프레임임을 받아올떄 사용합니다
 동영상에 저장되어 있는 일련의 정지 영상을 프레임 이라 하며 동영상을 처리하는 작업은 동영상에서 프레임을 추출한 후 각각의 프레임에 영상 처리 기법을을 적용하는 형태로 이루어짐
 
-
+api preference 인자에는 동영상 파일을 불러오는 방법을지정할수 있음
  API
     CAP_ANY:자동선택
     CAP_V4L,CAP_V4L2 리눅스?
@@ -25,6 +25,8 @@ Video Capture 클래스 => 카메라 또는 동영상 피일로 부터 정지 �
     CAP_FFMPEG
     CAP_IMAGES:일련의 영상파일
     CAP_OPENCV_MJPEG
+
+
 
 동영상 여러 정보 가져오기
 
@@ -62,20 +64,29 @@ pub fn main() -> Result<()> {
     Ok(())
 }
 pub fn camera_in() -> Result<()> {
+
+
     let window = "video capture";
     highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
     //컴퓨터에 카메라 한대만 입력되어 있다면 index 0
+
+   //file name에는 "mp4,.avi등 동영상 파일 이름을 전달 하나의 동영상 파일대신 일련의 숫자로 구분되는 이름의 정지영상을 가지고 있고  이파일을 차례대로 불러오고싶을떄도 사용가능
+    //예를 들어 img0001.jpg , img0002.jpg , img0003.jpg 등 차례대로 불러오고싶다면  인자에 img%04d.jpg라고 입력하여 일련의 영상을 차례대로  불러오는게 가능
+    //" "protocol://host:port" 형태의 비디오 스트림 URL을 지정하여 인터넷 동영상도 사용가능
+    //index가 0이면  첫번쨰 카메라 장치를 사용한다는 것
     let mut cap = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
     //사용 가능한 상태로 열렸는지 확인
     //자원해제
-    // cap.release()?;
+
+    //카메라 장치가 사용하면 true 그렇지 않으면 false
     if !cap.is_opened()? {
         panic!("Unable to open default camera!");
     }
-
+    //카메라 장치 또는 동영상 파일의 사용이 끝나면 자원을 release함수를 호출하여 자원을 해제해야함
+    // cap.release()?;//
     println!("Frame width:{}", cap.get(CAP_PROP_FRAME_WIDTH)?.round());
     println!("Frame height{}", cap.get(CAP_PROP_FRAME_HEIGHT)?.round());
-
+    
     let fps = cap.get(CAP_PROP_FPS)?;
     println!("FPS:{}", fps);
     let delay = (1000. / fps).round();
@@ -97,9 +108,10 @@ pub fn camera_in() -> Result<()> {
         highgui::imshow("frame", &frame)?;
         highgui::imshow("inversed", &inversed)?;
 
-        //10ms를 기다린 후 다음 프레임
-        //27은 esc
-        if wait_key(delay as i32)? == 27 {
+        //10ms를 기다린 후 다음 프레임 받아오게댐
+        //27은 esc 
+        //키값이 27이면 while루프를 빠져나오도록 설게
+        if wait_key(10 as i32)? == 27 {
             break;
         }
     }
@@ -109,13 +121,18 @@ pub fn camera_in() -> Result<()> {
 }
 
 pub fn video_in() -> Result<()> {
+    //대부분으 동영상 파일은고유의 코덱을 이용하여 압축한 형태로 저장
     let mut cap = videoio::VideoCapture::from_file("./video/face2.mp4", 0)?;
     if !cap.is_opened()? {
         panic!("Unable to open default capera!");
     }
+    //동영상의 정보 가져오기
     println!("{}", cap.get(CAP_PROP_FRAME_WIDTH)?.round());
     println!("{}", cap.get(CAP_PROP_FRAME_HEIGHT)?.round());
     println!("{}", cap.get(CAP_PROP_FRAME_COUNT)?.round());
+
+    //초당 30프레임을 재생하는 경우 delay값은 33이며 이는 매 프레임을 33ms시간 간격으로 출력해야 함을 의미함
+    //여기서 구한 delay는 이후 동영상 프레임을 받아 화면에 출력하는 반복문안에서 waitKey()함수의 인자로 사용
     let fps = cap.get(CAP_PROP_FPS)?;
     println!("FPS:{}", fps);
 
@@ -137,10 +154,13 @@ pub fn video_in() -> Result<()> {
             break;
         }
     }
+    destroy_all_windows()?;
     Ok(())
 }
 
 pub fn camera_in_video_out() -> Result<()> {
+
+    //opencv 에서 동영상 파일을 생성하려면 Video Writer클래스 사용
     let mut cap = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
     //사용 가능한 상태로 열렸는지 확인
     if !cap.is_opened()? {
