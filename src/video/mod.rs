@@ -57,9 +57,9 @@ api preference 인자에는 동영상 파일을 불러오는 방법을지정할�
     AVC1: Advanced Video코덱
 */
 pub fn main() -> Result<()> {
-    camera_in()?;
+    // camera_in()?;
     // video_in()?;
-    // camera_in_video_out()?;
+    camera_in_video_out()?;
     // video_add_capture()?;
     Ok(())
 }
@@ -78,7 +78,7 @@ pub fn camera_in() -> Result<()> {
     //사용 가능한 상태로 열렸는지 확인
     //자원해제
 
-    //카메라 장치가 사용하면 true 그렇지 않으면 false
+    //is opened 는 카메라 장치가 사용하면 true 그렇지 않으면 false
     if !cap.is_opened()? {
         panic!("Unable to open default camera!");
     }
@@ -121,8 +121,8 @@ pub fn camera_in() -> Result<()> {
 }
 
 pub fn video_in() -> Result<()> {
-    //대부분으 동영상 파일은고유의 코덱을 이용하여 압축한 형태로 저장
-    let mut cap = videoio::VideoCapture::from_file("./video/face2.mp4", 0)?;
+    //대부분의 동영상 파일은고유의 코덱을 이용하여 압축한 형태로 저장
+    let mut cap = videoio::VideoCapture::from_file("./video/face2.mp4", CAP_ANY)?;
     if !cap.is_opened()? {
         panic!("Unable to open default capera!");
     }
@@ -170,7 +170,7 @@ pub fn camera_in_video_out() -> Result<()> {
     let w = cap.get(CAP_PROP_FRAME_WIDTH)? as i32;
     let h = cap.get(CAP_PROP_FRAME_HEIGHT)? as i32;
     let fps = cap.get(CAP_PROP_FPS)?;
-
+    //코덱설정
     let fourcc = videoio::VideoWriter::fourcc('X', '2', '6', '4')?; //m1기준 x264=>H.264
 
     let delay = 1000.0 / fps.round();
