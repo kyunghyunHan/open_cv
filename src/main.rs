@@ -51,10 +51,10 @@ pub fn main() {
     // mat_op::main().unwrap();
 
     /*Video Capture */
-    video::main().unwrap();
+    // video::main().unwrap();
 
     /*drawing */
-    // drawing::main().unwrap();
+    drawing::main().unwrap();
 
 
     /*keyboard */
