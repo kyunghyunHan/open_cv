@@ -1,7 +1,6 @@
 use opencv::objdetect::CascadeClassifier;
 
 mod affine;
-mod file_storage;
 mod binarization;
 mod brihtness;
 mod color_op;
@@ -12,28 +11,31 @@ mod deep_learning;
 mod drawing;
 mod edges;
 mod face_mark;
+mod file_storage;
 mod filter;
 mod google_net;
 mod histogram;
 mod hog;
 mod hough;
 mod image;
-mod keyboard;
 mod keypoint;
 mod labeling;
 mod machine_learning;
 mod mat_op;
 mod matching;
 mod module;
-mod mouse;
+
+mod events;
 mod object_detection;
 mod odometry_algorithm;
 mod perspective;
 mod qr_code;
 mod resnet_image;
 mod scanner;
+mod stereo_vision;
 mod storage;
 mod torch;
+mod trackbar;
 mod tracker;
 mod utils;
 mod video;
@@ -41,11 +43,7 @@ mod video_features;
 mod warping;
 mod yolo;
 mod yolo_image;
-mod trackbar;
-mod stereo_vision;
 pub fn main() {
-
-
     /*Mat OP */
 
     // mat_op::main().unwrap();
@@ -54,19 +52,13 @@ pub fn main() {
     // video::main().unwrap();
 
     /*drawing */
-    drawing::main().unwrap();
+    // drawing::main().unwrap();
 
+    /*event */
+    events::main().unwrap();
 
-    /*keyboard */
-    // keyboard::main().unwrap();
-
-
-    /*Mouse */
-//    mouse::main().unwrap();
-    
     /*trackbar */
     // trackbar::main().unwrap();
-    
 
     /*File Storage */
 
@@ -97,6 +89,4 @@ pub fn main() {
 
     /*stereo_vision */
     // stereo_vision::main().unwrap();
-
-    
 }
