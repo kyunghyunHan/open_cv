@@ -35,7 +35,6 @@ mod scanner;
 mod stereo_vision;
 mod storage;
 mod torch;
-mod trackbar;
 mod tracker;
 mod utils;
 mod video;
@@ -57,8 +56,6 @@ pub fn main() {
     /*event */
     events::main().unwrap();
 
-    /*trackbar */
-    // trackbar::main().unwrap();
 
     /*File Storage */
 
