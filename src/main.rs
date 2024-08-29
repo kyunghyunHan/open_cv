@@ -10,6 +10,7 @@ mod cv_dl;
 mod deep_learning;
 mod drawing;
 mod edges;
+mod events;
 mod face_mark;
 mod file_storage;
 mod filter;
@@ -21,11 +22,10 @@ mod image;
 mod keypoint;
 mod labeling;
 mod machine_learning;
+mod mask;
 mod mat_op;
 mod matching;
 mod module;
-
-mod events;
 mod object_detection;
 mod odometry_algorithm;
 mod perspective;
@@ -54,12 +54,13 @@ pub fn main() {
     // drawing::main().unwrap();
 
     /*event */
-    events::main().unwrap();
-
+    // events::main().unwrap();
 
     /*File Storage */
 
     // file_storage::main().unwrap();
+    /*mask */
+    mask::main().unwrap();
     /*tracker */
     // tracker::main().unwrap();
 

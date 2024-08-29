@@ -82,13 +82,13 @@ Opencv에는 GUI를 추가하여 트랙바인터페이스를 사용할수 있습
 트랙바는 사용자가 지정한 영상 출력창에 상단에 부착되며 필요한 경우 창 하나에 여러개의 트랙바를 생성할수 있습니다.각각의 트랙바에는 고유한 이름설정해야하며 생성시 최소 위치는 항상 0으로 고정되어 있습니다.
 
 생성하려면 crate_trackbar() 함수를 사용해야하며 다음과같습니다.
-trackbarname:
-winname:
-value:
-count:
-on_change:
-useradta:
-반환값:
+trackbarname:트랙바 이름
+winname:트랙바를 생성할 창 이름
+value:트랙바 위치를 받을 정 수형 변수의 주소
+count:트랙바 최대 위치
+on_change:트랙바 위치가 변경될떄마다 호출되게 만들 콜백 함수이름 만약 NULL을 지정하면 콜백함수는 호출되지 않고 Value로 지정한 변수 값만 갱신됩니다.
+useradta:트랙바 콜백함수에 전달할 사용자 데이터의 포인터
+
 
 */
 
@@ -107,7 +107,7 @@ fn keyboard_event_exampe() -> Result<()> {
 }
 fn mouse_event() -> Result<()> {
     let img: Arc<Mutex<Mat>> = Arc::new(Mutex::new(imgcodecs::imread(
-        "./img/face1.jpeg",
+        "./img/bike0.png",
         IMREAD_COLOR,
     )?));
 
@@ -161,7 +161,7 @@ fn mouse_event() -> Result<()> {
 }
 
 fn keyboard_event() -> Result<()> {
-    let mut img = imgcodecs::imread("./img/face1.jpeg", IMREAD_GRAYSCALE)?;
+    let mut img = imgcodecs::imread("./img/bike0.png", IMREAD_GRAYSCALE)?;
     if img.empty() {
         println!("{}", "image load failed");
         std::process::exit(0);
