@@ -1,5 +1,9 @@
 # open_cv
-## 
+
+- opencv 에 대해 정리
+
+
+## install
 - m1기준
 ```
 opencv = "0.90.0"
@@ -19,10 +23,22 @@ export LDFLAGS="-L/opt/homebrew/opt/llvm/lib"
 export CPPFLAGS="-I/opt/homebrew/opt/llvm/include"
 export PATH="/usr/local/opt/llvm/bin:$PATH"
 ```
+
+```
+brew list --versions
+brew -v update
+brew upgrade --force --display-times
+brew list --versions
+brew -v install --force --display-times opencv"$BREW_OPENCV_VERSION"
+brew link opencv"$BREW_OPENCV_VERSION"
+```
+
 ## 데이터셋
 - 사람얼굴감지 :haarcascade_frontalface_alt.xml
 - 사람 눈감지 : haarcascades/haarcascade_eye_tree_eyeglasses.xml
 - 고양이 얼굴감지 :haarcascades/haarcascade_frontalcatface.xml
+
+
  ## 주요모듈
  - calib3d : 카메라 켈브레이션과 3차원 재구성
  - 해열ㄹ,백터 등 opencv핵심 클래스와 연산함수
@@ -36,21 +52,13 @@ export PATH="/usr/local/opt/llvm/bin:$PATH"
  - object:얼굴 ,보행자,검출등 객체검출
  - prhto:잡음제거
 - 
-## 
+## speed up
 ```
 [profile.dev]
 opt-level = 3
 ```
 
-## opencv install
-```
-brew list --versions
-brew -v update
-brew upgrade --force --display-times
-brew list --versions
-brew -v install --force --display-times opencv"$BREW_OPENCV_VERSION"
-brew link opencv"$BREW_OPENCV_VERSION"
-```
+
 
 ## Class
 - Point_ :2차원 평면
