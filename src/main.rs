@@ -22,7 +22,6 @@ mod image;
 mod keypoint;
 mod labeling;
 mod machine_learning;
-mod mask;
 mod mat_op;
 mod matching;
 mod module;
@@ -60,7 +59,7 @@ pub fn main() {
 
     // file_storage::main().unwrap();
     /*mask */
-    mask::main().unwrap();
+    utils::main().unwrap();
     /*tracker */
     // tracker::main().unwrap();
 

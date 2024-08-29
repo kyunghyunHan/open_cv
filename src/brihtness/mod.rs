@@ -2,7 +2,7 @@ use std::os::raw::c_void;
 /*영상의 밝기 조절 */
 use opencv::{
     core::{self, Mat, MatTrait, MatTraitConst, Vec3b},
-    highgui::{self, create_trackbar},
+    highgui::{self, create_trackbar, destroy_all_windows, imshow, named_window, wait_key},
     imgcodecs::{self, IMREAD_COLOR, IMREAD_GRAYSCALE},
     Result,
 };
@@ -66,7 +66,7 @@ fn brihtness4() -> Result<()> {
     let img_clone = Arc::clone(&img);
 
     let window = "face detection";
-    highgui::named_window(window, highgui::WINDOW_AUTOSIZE)?;
+    named_window(window, highgui::WINDOW_AUTOSIZE)?;
     create_trackbar(
         "face detection",
         "face detection",
@@ -74,19 +74,19 @@ fn brihtness4() -> Result<()> {
         100,
         Some(Box::new({
             move |val| {
-                let  img_guard = img_clone.lock().unwrap();
+                let img_guard = img_clone.lock().unwrap();
                 let brightness_value = val as f64;
-                let mut result = core::Mat::default();
-                img_guard.convert_to(&mut result, -1, 1.0, brightness_value).unwrap();
-                highgui::imshow(window, &result).unwrap();
+                let mut result = Mat::default();
+                img_guard
+                    .convert_to(&mut result, -1, 1.0, brightness_value)
+                    .unwrap();
+                imshow(window, &result).unwrap();
             }
         })),
     )?;
 
-    highgui::imshow("face detection", &*img.lock().unwrap())?;
-
-    highgui::wait_key(0)?;
-    highgui::destroy_all_windows()?;
+    imshow("face detection", &*img.lock().unwrap())?;
+    wait_key(0)?;
+    destroy_all_windows()?;
     Ok(())
 }
-
