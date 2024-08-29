@@ -59,7 +59,9 @@ pub fn main() {
 
     // file_storage::main().unwrap();
     /*mask */
-    utils::main().unwrap();
+    // utils::main().unwrap();
+
+    brihtness::main().unwrap();
     /*tracker */
     // tracker::main().unwrap();
 

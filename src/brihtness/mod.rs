@@ -8,15 +8,15 @@ use opencv::{
 };
 use std::sync::{Arc, Mutex};
 pub fn main() -> Result<()> {
-    // brihtness()?;
-    // brihtness2()?;
     brihtness4()?;
+    // brihtness2()?;
+    // brihtness4()?;
     Ok(())
 }
 
 fn brihtness() -> Result<()> {
     // Load the source image
-    let src = imgcodecs::imread("./img/face.jpg", IMREAD_COLOR)?;
+    let src = imgcodecs::imread("./img/bike0.png", IMREAD_COLOR)?;
 
     if src.empty() {
         println!("{}", "error");
@@ -27,7 +27,7 @@ fn brihtness() -> Result<()> {
     let mut result = Mat::default();
 
     // Adjust brightness by adding a constant value to each pixel
-    let brightness_value = 100;
+    let brightness_value = 70;
     src.convert_to(&mut result, -1, 1.0, brightness_value as f64)?;
 
     // Display the original and adjusted images
@@ -39,7 +39,7 @@ fn brihtness() -> Result<()> {
 }
 
 fn brihtness2() -> Result<()> {
-    let src = imgcodecs::imread("./img/face.jpg", IMREAD_GRAYSCALE)?;
+    let src = imgcodecs::imread("./img/bike0.png", IMREAD_GRAYSCALE)?;
     if src.empty() {
         println!("{}", "image load fiiled");
     }
@@ -60,7 +60,7 @@ fn brihtness2() -> Result<()> {
 }
 fn brihtness4() -> Result<()> {
     let img = Arc::new(Mutex::new(imgcodecs::imread(
-        "./img/face.jpg",
+        "./img/bike0.png",
         IMREAD_COLOR,
     )?));
     let img_clone = Arc::clone(&img);
