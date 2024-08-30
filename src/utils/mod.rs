@@ -1,5 +1,8 @@
 use opencv::{
-    core::{Mat, MatTrait, MatTraitConst, Scalar, TickMeter, TickMeterTrait, TickMeterTraitConst},
+    core::{
+        mean, no_array, sum_elems, Mat, MatTrait, MatTraitConst, Scalar, TickMeter, TickMeterTrait,
+        TickMeterTraitConst,
+    },
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_COLOR, IMREAD_GRAYSCALE},
     Result,
@@ -24,6 +27,10 @@ src에서 비행기가 위치에서만 픽셀값이 255이고 나머지는 픽�
 연산 시간 측정
 대부분의 영상 처리 시스템은 대용량 영상 데이터를 다루고 복잡한 알고리즘 연산을 수행하기 떄문에 각 단계에서 소요되는 연산 시간을 측정하고 시간이 오래 걸리는 부분을 찾아 개선하는 시스템 최적화 작업이 필수적이다.
 특히 머신 비전 분야에서 처럼 실시간 연산을 필요로하는 시스템의 경우 매우 중요하다고 볼수 있다.
+
+sum함수와 mean함수
+행렬의  전체 원소의 합과 평균을 구하는 일은 종종필요합니다.원소 합을 구하고 싶을 떄는 sum()함수를 사용하고 평균을 구하고 싶을 떄는 mean()함수를사용합니다.이 두채널은 4채널 이하의 행렬에서만 작동합니다.
+
 */
 fn mask_set_to() -> Result<()> {
     let mut src = imread("./img/lenna.bmp", IMREAD_COLOR)?;
@@ -33,7 +40,7 @@ fn mask_set_to() -> Result<()> {
         panic!("image load faild")
     }
     src.set_to(&Scalar::from((0, 255, 255)), &mask)?;
-    
+
     imshow("src", &src)?;
     imshow("mask", &mask)?;
     wait_key(0)?;
@@ -70,11 +77,20 @@ fn time_inverse() -> Result<()> {
         }
     }
     tm.stop()?;
-    println!("image inverse took{:?}",tm.get_time_milli());
+    println!("image inverse took{:?}", tm.get_time_milli());
+    Ok(())
+}
+
+fn sum_mean() -> Result<()> {
+    let mut src = imread("./img/lenna.bmp", IMREAD_GRAYSCALE)?;
+
+    println!("sum: {:?}", sum_elems(&src)?.0[0] as i32);
+    println!("mean: {:?}", mean(&src, &no_array())?.0[0] as i32);
     Ok(())
 }
 pub fn main() -> Result<()> {
-    mask_set_to()?;
+    // mask_set_to()?;
+    sum_mean()?;
     // mask_copy_to()?;
     // time_inverse()?;
     Ok(())
