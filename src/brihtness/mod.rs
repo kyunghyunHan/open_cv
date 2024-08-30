@@ -1,8 +1,4 @@
-use std::os::raw::c_void;
 /*영상의 밝기 조절
-
-
-
 
 */
 use opencv::{
@@ -16,9 +12,9 @@ use opencv::{
 use std::sync::{Arc, Mutex};
 pub fn main() -> Result<()> {
     brihtness()?;
-    // brihtness4()?;
-    // brihtness2()?;
-    // brihtness4()?;
+    brihtness2()?;
+    brihtness3()?;
+
     Ok(())
 }
 
@@ -27,12 +23,11 @@ fn brihtness() -> Result<()> {
     let src = imgcodecs::imread("./img/bike0.png", IMREAD_COLOR)?;
 
     if src.empty() {
-        println!("{}", "error");
-        return Ok(());
+        panic!("{}", "error");
     }
 
     let dst = add_mat_scalar(&src, Scalar::all(100.))?.to_mat()?;
-    
+
     highgui::imshow("Original Image", &src)?;
     highgui::imshow("Brightened Image", &dst)?;
     highgui::wait_key(0)?;
@@ -43,7 +38,7 @@ fn brihtness() -> Result<()> {
 fn brihtness2() -> Result<()> {
     let src = imgcodecs::imread("./img/bike0.png", IMREAD_GRAYSCALE)?;
     if src.empty() {
-        println!("{}", "image load fiiled");
+        panic!("{}", "image load fiiled");
     }
     let mut dst = src.clone();
 
@@ -60,7 +55,8 @@ fn brihtness2() -> Result<()> {
     highgui::destroy_all_windows()?;
     Ok(())
 }
-fn brihtness4() -> Result<()> {
+
+fn brihtness3() -> Result<()> {
     let img = Arc::new(Mutex::new(imgcodecs::imread(
         "./img/bike0.png",
         IMREAD_COLOR,
