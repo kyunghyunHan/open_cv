@@ -11,9 +11,9 @@ use opencv::{
 };
 use std::sync::{Arc, Mutex};
 pub fn main() -> Result<()> {
-    brihtness()?;
+    // brihtness()?;
     brihtness2()?;
-    brihtness3()?;
+    // brihtness3()?;
 
     Ok(())
 }
@@ -36,19 +36,30 @@ fn brihtness() -> Result<()> {
 }
 
 fn brihtness2() -> Result<()> {
-    let src = imgcodecs::imread("./img/bike0.png", IMREAD_GRAYSCALE)?;
+    let src = imgcodecs::imread("./img/lenna.bmp", IMREAD_GRAYSCALE)?;
     if src.empty() {
         panic!("{}", "image load fiiled");
     }
     let mut dst = src.clone();
-
+    // for j in 0..src.rows() {
+    //     for i in 0..src.cols() {
+    //         let v = *src.at_2d::<u8>(j, i)? as i32 + 100;
+    //         *dst.at_2d_mut::<u8>(j, i)? = *src.at_2d::<u8>(j, i)?  + 100;
+    //     }
+    // }
     for j in 0..src.rows() {
         for i in 0..src.cols() {
-            /*픽셀 255까지 */
-
-            *dst.at_2d_mut::<u8>(j, i)? = *src.at_2d::<u8>(j, i)? + 8;
+            let v = *src.at_2d::<u8>(j, i)? as i32 + 100;
+            *dst.at_2d_mut::<u8>(j, i)? = if v > 255 {
+                255
+            } else if v < 0 {
+                0
+            } else {
+                v as u8
+            }
         }
     }
+
     highgui::imshow("Original Image", &src)?;
     highgui::imshow("Brightened Image", &dst)?;
     highgui::wait_key(0)?;
