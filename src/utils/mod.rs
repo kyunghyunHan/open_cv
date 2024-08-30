@@ -1,7 +1,8 @@
 use opencv::{
     core::{
-        mean, no_array, sum_elems, Mat, MatTrait, MatTraitConst, Scalar, TickMeter, TickMeterTrait,
-        TickMeterTraitConst,
+        mean, min_max_loc, no_array, normalize, sum_elems, Mat, MatTrait, MatTraitConst,
+        MatTraitConstManual, Point, Scalar, TickMeter, TickMeterTrait, TickMeterTraitConst,
+        CV_8UC1, NORM_MINMAX,
     },
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_COLOR, IMREAD_GRAYSCALE},
@@ -30,6 +31,17 @@ src에서 비행기가 위치에서만 픽셀값이 255이고 나머지는 픽�
 
 sum함수와 mean함수
 행렬의  전체 원소의 합과 평균을 구하는 일은 종종필요합니다.원소 합을 구하고 싶을 떄는 sum()함수를 사용하고 평균을 구하고 싶을 떄는 mean()함수를사용합니다.이 두채널은 4채널 이하의 행렬에서만 작동합니다.
+maan()함수는 마스크 연산을 지원하므로 필요한 경우 mask연사을 지정하여 특정 영역의 원소 평균을 구할수도 있습니다.단 sum()과 mean()함수의 반환형은 Scalar라는점을 알고 있어야 합니다.
+다음의 예제 입니다.
+
+min_max_loc()
+행렬의 최솟값,최대값을 갖는 함수입니다.최솟값,최대값이 있는 좌표정보도 함계 알아 낼수 있습니다.
+
+normalize()
+행렬의 노름값을 정규화 하거나 원소값범위를 특정 범위로 정규화할떄 사용하는 함수입니다.이 함수는 norm_type 인자에 따라 동작이결정됩니다.
+NORM_INF,NORM_L1,NORM_L2인 경우에는 수식을 만족하도록 입력 행렬 원소 값의 크기를 조정합니다.
+
+인자가 NORM_MINMAX인 경우에는 src행렬의 최솟값이 alpha,최댓값이 beta가 되도록 모든 원소 값 크기를 조절합니다.특히 실수로 구성된 행렬을 그레이스케일 영상 형태로 변환하고자 할떄 유용합니다.
 
 */
 fn mask_set_to() -> Result<()> {
@@ -55,7 +67,9 @@ fn mask_copy_to() -> Result<()> {
         panic!("image load faild")
     }
     src.copy_to_masked(&mut dst, &mask)?;
-    imshow("src", &dst)?;
+    imshow("src", &src)?;
+    imshow("mask", &mask)?;
+    imshow("dst", &dst)?;
     wait_key(0)?;
     destroy_all_windows()?;
 
@@ -88,9 +102,52 @@ fn sum_mean() -> Result<()> {
     println!("mean: {:?}", mean(&src, &no_array())?.0[0] as i32);
     Ok(())
 }
+
+fn min_max_loc_fn() -> Result<()> {
+    let mut src = imread("./img/lenna.bmp", IMREAD_GRAYSCALE)?;
+
+    let mut min_val = 0.0;
+    let mut max_val = 0.0;
+    let mut min_pos = Point::default(); // Point 타입을 사용하여 위치 저장
+    let mut max_pos = Point::default();
+    min_max_loc(
+        &src,
+        Some(&mut min_val),
+        Some(&mut max_val),
+        Some(&mut min_pos),
+        Some(&mut max_pos),
+        &no_array(),
+    )?;
+
+    println!("Min VAL : {} at {:?}", min_val, min_pos);
+    println!("Max VAL : {} at {:?}", max_val, max_pos);
+
+    Ok(())
+}
+fn normailze_fn() -> Result<()> {
+    let data: [f32; 5] = [-1.0, -0.5, 0.0, 0.5, 1.0];
+
+    let src = Mat::from_slice(&data)?.reshape(1, 1)?.clone_pointee();
+
+    let mut dst = Mat::default();
+    normalize(&src, &mut dst, 0., 255., NORM_MINMAX, CV_8UC1, &no_array())?;
+
+    println!("{:?}", src.to_vec_2d::<f32>().unwrap());
+    println!("{:?}", dst.to_vec_2d::<u8>().unwrap());
+
+    /*
+    [[-1.0, -0.5, 0.0, 0.5, 1.0]]
+    [[0, 64, 128, 191, 255]]
+
+         */
+    Ok(())
+}
+
 pub fn main() -> Result<()> {
+    min_max_loc_fn()?;
     // mask_set_to()?;
-    sum_mean()?;
+    // normailze_fn()?;
+    // sum_mean()?;
     // mask_copy_to()?;
     // time_inverse()?;
     Ok(())

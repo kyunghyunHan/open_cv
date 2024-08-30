@@ -1,14 +1,22 @@
 use std::os::raw::c_void;
-/*영상의 밝기 조절 */
+/*영상의 밝기 조절
+
+
+
+
+*/
 use opencv::{
-    core::{self, Mat, MatTrait, MatTraitConst, Vec3b},
+    core::{
+        self, add, add_mat_scalar, Mat, MatExprTraitConst, MatTrait, MatTraitConst, Scalar, Vec3b,
+    },
     highgui::{self, create_trackbar, destroy_all_windows, imshow, named_window, wait_key},
     imgcodecs::{self, IMREAD_COLOR, IMREAD_GRAYSCALE},
     Result,
 };
 use std::sync::{Arc, Mutex};
 pub fn main() -> Result<()> {
-    brihtness4()?;
+    brihtness()?;
+    // brihtness4()?;
     // brihtness2()?;
     // brihtness4()?;
     Ok(())
@@ -23,16 +31,10 @@ fn brihtness() -> Result<()> {
         return Ok(());
     }
 
-    // Create a new Mat to store the result
-    let mut result = Mat::default();
-
-    // Adjust brightness by adding a constant value to each pixel
-    let brightness_value = 70;
-    src.convert_to(&mut result, -1, 1.0, brightness_value as f64)?;
-
-    // Display the original and adjusted images
+    let dst = add_mat_scalar(&src, Scalar::all(100.))?.to_mat()?;
+    
     highgui::imshow("Original Image", &src)?;
-    highgui::imshow("Brightened Image", &result)?;
+    highgui::imshow("Brightened Image", &dst)?;
     highgui::wait_key(0)?;
     highgui::destroy_all_windows()?;
     Ok(())
