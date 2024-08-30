@@ -1,43 +1,47 @@
-use opencv::{core::{self, no_array}, highgui, imgcodecs::{self, IMREAD_GRAYSCALE}, imgproc::calc_hist, Result};
+/*
+histogram
 
-macro_rules! greet {
-    // greet! 매크로가 호출될 때 이 규칙이 적용됩니다.
-    () => {
-        // 매크로가 생성하는 코드
-        println!("Hello, world!");
-    };
-    ($name:ident) => {
-        $name +=1;
-        println!("Hello, {}!", $name);
-    };
+*/
+
+use opencv::{
+    core::{no_array, Mat, MatExprTraitConst, Vector, CV_32FC1},
+    highgui::{destroy_all_windows, imshow, wait_key},
+    imgcodecs::{imread, IMREAD_GRAYSCALE},
+    imgproc::calc_hist,
+    Result,
+};
+fn calc_gray_hist(img: Mat) -> Result<Mat> {
+    // let mut hist = Mat::default();
+    let mut hist = Mat::zeros(1, 256, CV_32FC1)?.to_mat()?;
+
+    let channels: Vector<i32> = Vector::from_slice(&[0]);
+    let dims = 1;
+    let hist_size: Vector<i32> = Vector::from_slice(&[256]);
+    let gray_level = vec![0., 256.];
+    let ranges = Vector::from_slice(&gray_level);
+
+    calc_hist(
+        &img,
+        &channels,
+        &no_array(),
+        &mut hist,
+        &hist_size,
+        &ranges,
+        false,
+    )?;
+    Ok(hist)
 }
-pub fn main()->Result<()>{
+fn calc_gray_hist_fn() -> Result<()> {
+    let mut src = imread("./img/lenna.bmp", IMREAD_GRAYSCALE)?;
+    let hist = calc_gray_hist(src)?;
 
-    calc_gray_hist()?;
+    imshow("src", &hist)?;
+    wait_key(0)?;
+    destroy_all_windows()?;
 
-    
     Ok(())
 }
-
-fn calc_gray_hist()->Result<()>{
-    let mut src= imgcodecs::imread("./img/face.jpg", IMREAD_GRAYSCALE)?;
-
-    let mut hist = core::Mat::default();  
-    let mut num = 10;
-    greet!(num);
-    
-    println!("{}",num);
-    let channels:core::Vector<i32>= core::Vector::from_iter([0]);
-    let dims= 1;
-    
-    let hist_size:core::Vector<i32>= core::Vector::from_iter([256]);
-    let ranges:core::Vector<f32>= core::Vector::from_iter([0.,256.]);
-    
-    // let p_ranges: [*const f32; 1] = [ranges.as_ptr() as *const f32];
-    calc_hist(&src, &channels, &no_array(), &mut hist, &hist_size, &ranges, true)?;
-    highgui::imshow("src", &hist)?;
-    highgui::wait_key(0)?;
-    highgui::destroy_all_windows()?;
-  
+pub fn main() -> Result<()> {
+    calc_gray_hist_fn()?;
     Ok(())
 }
