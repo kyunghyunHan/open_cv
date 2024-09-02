@@ -64,7 +64,7 @@ pub fn main() {
     // brihtness::main().unwrap();
 
 
-    histogram::main().unwrap();
+    // histogram::main().unwrap();
     /*tracker */
     // tracker::main().unwrap();
 
