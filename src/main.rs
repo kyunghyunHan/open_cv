@@ -61,7 +61,7 @@ pub fn main() {
     /*mask */
     // utils::main().unwrap();
     /*brihtness */
-    // brihtness::main().unwrap();
+    brihtness::main().unwrap();
 
 
     // histogram::main().unwrap();
