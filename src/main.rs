@@ -62,9 +62,9 @@ pub fn main() {
     /*brihtness */
     // brihtness::main().unwrap();
      
-     contrast::main().unwrap();
+    //  contrast::main().unwrap();
 
-    // histogram::main().unwrap();
+    histogram::main().unwrap();
     /*tracker */
     // tracker::main().unwrap();
 
