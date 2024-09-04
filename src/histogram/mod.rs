@@ -7,12 +7,12 @@ histogram
 
 use opencv::{
     core::{
-        min_max_loc, no_array, Mat, MatExprTraitConst, MatTraitConst, Point, Point_, Scalar,
-        Vector, CV_32F, CV_32FC1, CV_8U, CV_8UC1,
+        divide2, min_max_loc, multiply, no_array, sub_scalar_mat, subtract, Mat, MatExprTraitConst,
+        MatTraitConst, Point, Point_, Scalar, Vector, CV_32F, CV_32FC1, CV_8U, CV_8UC1,
     },
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_GRAYSCALE},
-    imgproc::{calc_hist, calc_hist_def, line, LINE_AA},
+    imgproc::{calc_hist, calc_hist_def, equalize_hist, line, LINE_AA},
     Result,
 };
 
@@ -88,7 +88,6 @@ fn b() -> Result<()> {
     }
     println!("{:?}", src);
     println!("{:?}", src.size());
-
     let hist = calc_gray_hist(&src)?;
     let hist_img = get_gray_hist_image(&hist)?;
     imshow("src", &src)?;
@@ -99,7 +98,77 @@ fn b() -> Result<()> {
 
     Ok(())
 }
+
+fn histogram() -> Result<()> {
+    let src = imread("./img/hawkes.bmp", IMREAD_GRAYSCALE)?;
+    if src.empty() {
+        panic!("error");
+    }
+
+    let (mut gmin, mut gmax) = (0., 0.);
+
+    min_max_loc(
+        &src,
+        Some(&mut gmin),
+        Some(&mut gmax),
+        Some(&mut Point::default()),
+        Some(&mut Point::default()),
+        &no_array(),
+    )?;
+    //Mat dst = (src -gmin) * 255/(gmax-gmin)
+    let mut dst = Mat::default();
+    let mut dst_sub = Mat::default();
+    let mut dst_mul = Mat::default();
+
+    subtract(&src, &gmin, &mut dst_sub, &no_array(), -1)?;
+    multiply(
+        &dst_sub,
+        &Scalar::all(255.0 / (gmax - gmin)),
+        &mut dst,
+        1.0,
+        -1,
+    )?;
+    let src_hist = calc_gray_hist(&src)?;
+    let src_hist_img = get_gray_hist_image(&src_hist)?;
+
+    let dst_hist = calc_gray_hist(&dst)?;
+    let dst_hist_img = get_gray_hist_image(&dst_hist)?;
+    imshow("src", &src)?;
+    imshow("srcHist", &src_hist_img)?;
+    imshow("dst", &dst)?;
+    imshow("dstHist", &dst_hist_img)?;
+
+    wait_key(0)?;
+    destroy_all_windows()?;
+
+    Ok(())
+}
+
+fn histogram_equzlization() -> Result<()> {
+    let src = imread("./img/hawkes.bmp", IMREAD_GRAYSCALE)?;
+    if src.empty() {
+        panic!("error");
+    }
+
+    let mut dst = Mat::default();
+    equalize_hist(&src, &mut dst)?;
+
+    let src_hist = calc_gray_hist(&src)?;
+    let src_hist_img = get_gray_hist_image(&src_hist)?;
+
+    let dst_hist = calc_gray_hist(&dst)?;
+    let dst_hist_img = get_gray_hist_image(&dst_hist)?;
+    imshow("src", &src)?;
+    imshow("srcHist", &src_hist_img)?;
+    imshow("dst", &dst)?;
+    imshow("dstHist", &dst_hist_img)?;
+    wait_key(0)?;
+    destroy_all_windows()?;
+    Ok(())
+}
 pub fn main() -> Result<()> {
-    b()?;
+    // b()?;
+    // histogram()?;
+    histogram_equzlization()?;
     Ok(())
 }
