@@ -5,7 +5,6 @@ mod binarization;
 mod brihtness;
 mod color_op;
 mod contrast;
-mod corners;
 mod cv_dl;
 mod deep_learning;
 mod drawing;
@@ -61,8 +60,9 @@ pub fn main() {
     /*mask */
     // utils::main().unwrap();
     /*brihtness */
-    brihtness::main().unwrap();
-
+    // brihtness::main().unwrap();
+     
+     contrast::main().unwrap();
 
     // histogram::main().unwrap();
     /*tracker */
