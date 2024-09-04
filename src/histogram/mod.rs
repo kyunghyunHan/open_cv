@@ -6,39 +6,36 @@ histogram
 */
 
 use opencv::{
-    core::{no_array, Mat, MatExprTraitConst, MatTraitConst, Vector, CV_32F, CV_32FC1, CV_8UC1},
+    core::{
+        min_max_loc, no_array, Mat, MatExprTraitConst, MatTraitConst, Point, Point_, Scalar,
+        Vector, CV_32F, CV_32FC1, CV_8U, CV_8UC1,
+    },
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_GRAYSCALE},
-    imgproc::calc_hist,
+    imgproc::{calc_hist, calc_hist_def, line, LINE_AA},
     Result,
 };
 
 fn calc_gray_hist(img: &Mat) -> Result<Mat> {
     // 입력 이미지가 CV_8UC1인지 확인
-    assert_eq!(img.typ(), 0);
-
-    // 히스토그램을 저장할 빈 Mat 생성
+    // assert_eq!(img.typ(), CV_8UC1);
+    let mut imgs: Vector<Mat> = Vector::new();
+    imgs.push(img.clone());
+    // 히스토그램을 저장할 빈 Mat 생성 (0으로 초기화, CV_32F 형식으로 설정)
     let mut hist = Mat::default();
-    // let mut hist = Mat::zeros(1, 256, CV_32F)?.to_mat()?;
 
     // 그레이스케일 이미지의 채널 (0은 유일한 채널)
-    let mut channels = Vector::new();
-    channels.push(0);
+    let channels = Vector::from_slice(&[0]);
 
     // 히스토그램의 크기 (그레이스케일의 경우 256개 빈)
-    let mut hist_size = Vector::new();
-    hist_size.push(1);
-    hist_size.push(256);
+    let hist_size = Vector::from_slice(&[256]);
 
     // 그레이스케일의 범위 (0부터 255까지)
-    let mut gray_level = Vector::new();
-    gray_level.push(0.0);
-    gray_level.push(255.0);
-    let ranges = Vector::from(gray_level);
-    
-    // 히스토그램 계산
+    let ranges = Vector::from_slice(&[0_f32, 255_f32]);
+
+    // 히스 토그램 계산
     calc_hist(
-        &img,
+        &imgs,
         &channels,
         &no_array(),
         &mut hist,
@@ -46,11 +43,46 @@ fn calc_gray_hist(img: &Mat) -> Result<Mat> {
         &ranges,
         false,
     )?;
-
     Ok(hist)
 }
-fn calc_gray_hist_fn() -> Result<()> {
-    let  src = imread("./img/camera.bmp", IMREAD_GRAYSCALE)?;
+
+fn get_gray_hist_image(hist: &Mat) -> Result<Mat> {
+    let mut hist_max = 0.;
+    println!("{}", 1);
+    min_max_loc(
+        hist,
+        Some(&mut 0.),
+        Some(&mut hist_max),
+        Some(&mut Point::default()),
+        Some(&mut Point::default()),
+        &no_array(),
+    )?;
+    let mut img_hist = Mat::new_rows_cols_with_default(100, 256, CV_8UC1, Scalar::all(255.))?;
+    println!("{}", hist_max);
+    for i in 0..256 {
+        // 히스토그램 값 읽기
+        let hist_value = hist.at_2d::<f32>(i, 0)?; // `f32` 타입으로 읽기
+
+        // 정수로 변환 (히스토그램 최대 값에 대한 비율로 변환)
+        let height = (100.0 - (hist_value * 100.0) / hist_max as f32).round() as i32;
+
+        // 그래프의 선 그리기
+        line(
+            &mut img_hist,
+            Point::new(i, 100),
+            Point::new(i, height),
+            Scalar::all(0.),
+            2,
+            LINE_AA,
+            0,
+        )?;
+    }
+    println!("{}", hist_max);
+
+    Ok((img_hist))
+}
+fn b() -> Result<()> {
+    let src = imread("./img/camera.bmp", IMREAD_GRAYSCALE)?;
     if src.empty() {
         panic!("error");
     }
@@ -58,14 +90,16 @@ fn calc_gray_hist_fn() -> Result<()> {
     println!("{:?}", src.size());
 
     let hist = calc_gray_hist(&src)?;
+    let hist_img = get_gray_hist_image(&hist)?;
+    imshow("src", &src)?;
+    imshow("hist_img", &hist_img)?;
 
-    imshow("src", &hist)?;
     wait_key(0)?;
     destroy_all_windows()?;
 
     Ok(())
 }
 pub fn main() -> Result<()> {
-    calc_gray_hist_fn()?;
+    b()?;
     Ok(())
 }
