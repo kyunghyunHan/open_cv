@@ -61,10 +61,13 @@ pub fn main() {
     // utils::main().unwrap();
     /*brihtness */
     // brihtness::main().unwrap();
-     
+
     //  contrast::main().unwrap();
 
-    histogram::main().unwrap();
+    // histogram::main().unwrap();
+
+    /*filter */
+    filter::main().unwrap();
     /*tracker */
     // tracker::main().unwrap();
 

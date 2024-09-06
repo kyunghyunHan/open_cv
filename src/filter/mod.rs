@@ -1,7 +1,6 @@
-use opencv::core::{no_array, randn, MatTraitConstManual, Size_, CV_32SC1};
-use opencv::gapi::{self, gaussian_blur};
-use opencv::highgui::wait_key;
-use opencv::imgproc::{FONT_HERSHEY_SIMPLEX, LINE_AA};
+use opencv::core::{add, no_array, randn, MatTraitConstManual, Size_, CV_32SC1};
+use opencv::highgui::{imshow, wait_key};
+use opencv::imgproc::{put_text, FONT_HERSHEY_SIMPLEX, LINE_AA};
 use opencv::{
     core::{self, Mat, MatTraitConst, Point, Scalar, BORDER_DEFAULT, CV_64F, CV_8UC1},
     highgui,
@@ -12,8 +11,46 @@ use opencv::{
 use opencv::prelude::MatTrait;
 use rand::Rng;
 use std::process::exit;
+/*filter
+영상과 잡음 모델
+
+*/
+
+fn noise_gaussian() -> Result<()> {
+    let src = imgcodecs::imread("./img/lenna.bmp", IMREAD_GRAYSCALE)?;
+
+    if src.empty() {
+        panic!("Image load failed!");
+    }
+    imshow("src", &src)?;
+    for stddev in (10..=30).step_by(10) {
+        let mut noise = Mat::new_size_with_default(src.size()?, CV_32SC1, Scalar::from(0))?;
+        let stddev = stddev as f64;
+        randn(&mut noise, &0., &stddev)?;
+
+        let mut dst = core::Mat::default();
+        add(&src, &noise, &mut dst, &no_array(), core::CV_8U)?;
+
+        let desc = format!("stddev{}", stddev);
+        put_text(
+            &mut dst,
+            &desc,
+            Point::from((10, 30)),
+            FONT_HERSHEY_SIMPLEX,
+            1.,
+            Scalar::from(0),
+            1,
+            LINE_AA,
+            false,
+        )?;
+        imshow("dst", &dst)?;
+        wait_key(0)?;
+    }
+    Ok(())
+}
 pub fn main() -> Result<()> {
-    median_filter()?;
+    noise_gaussian()?;
+    // median_filter()?;
     Ok(())
 }
 
@@ -21,10 +58,10 @@ fn embossing_filter() -> Result<()> {
     let src = imgcodecs::imread("./img/face.jpg", IMREAD_GRAYSCALE)?;
 
     let mut dst = Mat::default();
-    let ve=vec![0u8];
-     let a= dst.to_vec_2d::<u8>();
-     let a = mat_to_vec_1d(&dst);
-     let emboss = Mat::from_slice_2d(&vec![vec![-1, -1, 0], vec![-1, 0, 1], vec![0, 1, 1]]).unwrap();
+    let ve = vec![0u8];
+    let a = dst.to_vec_2d::<u8>();
+    let a = mat_to_vec_1d(&dst);
+    let emboss = Mat::from_slice_2d(&vec![vec![-1, -1, 0], vec![-1, 0, 1], vec![0, 1, 1]]).unwrap();
 
     if src.empty() {
         exit(0);
@@ -158,40 +195,6 @@ fn gaussin_filter() -> Result<()> {
     Ok(())
 }
 
-fn noise_gaussian() -> Result<()> {
-    let src = imgcodecs::imread("./img/face.jpg", IMREAD_GRAYSCALE)?;
-
-    if src.empty() {
-        println!("{}", "error");
-        std::process::exit(0);
-    }
-    highgui::imshow("src", &src)?;
-    for stddev in (10..=30).step_by(10) {
-        let mut noise = core::Mat::new_size_with_default(src.size()?, CV_32SC1, Scalar::from(0))?;
-        let stddev = stddev as f64;
-        randn(&mut noise, &0., &stddev)?;
-
-        let mut dst = core::Mat::default();
-        core::add(&src, &noise, &mut dst, &no_array(), core::CV_8U)?;
-
-        let desc = format!("stddev{}", stddev);
-        imgproc::put_text(
-            &mut dst,
-            &desc,
-            Point::from((10, 30)),
-            FONT_HERSHEY_SIMPLEX,
-            1.,
-            Scalar::from(0),
-            1,
-            LINE_AA,
-            false,
-        )?;
-        highgui::imshow("dst", &dst)?;
-        highgui::wait_key(0)?;
-    }
-    Ok(())
-}
-
 fn filter_bilateral() -> Result<()> {
     let src = imgcodecs::imread("./img/face.jpg", imgcodecs::IMREAD_GRAYSCALE)?;
     if src.empty() {
@@ -222,7 +225,7 @@ fn filter_bilateral() -> Result<()> {
 fn median_filter() -> Result<()> {
     let mut rng = rand::thread_rng();
 
-    let  mut src:Mat = imgcodecs::imread("./img/face.jpg", IMREAD_GRAYSCALE)?;
+    let mut src: Mat = imgcodecs::imread("./img/face.jpg", IMREAD_GRAYSCALE)?;
     if src.empty() {
         println!("{}", "Image load failed");
         std::process::exit(0);
@@ -231,10 +234,9 @@ fn median_filter() -> Result<()> {
     for i in 0..num as usize {
         let x: i32 = rng.gen_range(0..src.cols());
         let y: i32 = rng.gen_range(0..src.rows());
-        *src.at_2d_mut::<u8>(y, x)? = (i as u8 %2)*255 as u8;
-  
+        *src.at_2d_mut::<u8>(y, x)? = (i as u8 % 2) * 255 as u8;
     }
-    let mut dst1= Mat::default();
+    let mut dst1 = Mat::default();
     imgproc::gaussian_blur(&src, &mut dst1, Size_::default(), 1., 0., 0)?;
     let mut dst2 = core::Mat::default();
     imgproc::median_blur(&src, &mut dst2, 3)?;
@@ -244,7 +246,6 @@ fn median_filter() -> Result<()> {
     highgui::imshow("dst2", &dst2)?;
     highgui::wait_key(0)?;
     highgui::destroy_all_windows()?;
-
 
     Ok(())
 }
