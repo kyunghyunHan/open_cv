@@ -43,7 +43,7 @@ mod yolo_image;
 pub fn main() {
     /*Mat OP */
 
-    // mat_op::main().unwrap();
+    mat_op::main().unwrap();
 
     /*Video Capture */
     // video::main().unwrap();
@@ -67,7 +67,7 @@ pub fn main() {
     // histogram::main().unwrap();
 
     /*filter */
-    filter::main().unwrap();
+    // filter::main().unwrap();
     /*tracker */
     // tracker::main().unwrap();
 

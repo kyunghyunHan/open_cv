@@ -83,3 +83,17 @@ CV_16F 7
 
 ## mask
 
+## c++
+
+[] → get() or get_mut()
++, - → add(), sub()
+*, / → mul(), div()
+() (function call) → apply()
+= → set()
+* (deref) → try_deref() or try_deref_mut()
+==, != → equals(), not_equals()
+>, >= → greater_than(), greater_than_or_equal()
+<, <= → less_than(), less_than_or_equal()
+++, -- → incr(), decr()
+&, |, ^ → and(), or(), xor()
+! → negate()

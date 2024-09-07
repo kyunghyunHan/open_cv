@@ -120,15 +120,16 @@ Opencv 에서 Mat다음으로 자주 사용되는 클래스
 
 use opencv::{
     core::{
-        add, add_def, bitwise_not, multiply, no_array, Mat, MatConstIterator, MatExprTraitConst,
-        MatTrait, MatTraitConst, Point2f, Point_, Range, Rect, Rect_, RotatedRect, Scalar, Size,
-        Size2f, Size_, ToInputArray, Vec3b, Vector, _InputArrayTraitConst, CV_32FC1, CV_32FC3,
-        CV_32FC4, CV_32SC1, CV_8UC1, CV_8UC3, CV_HAL_DFT_REAL_OUTPUT, DECOMP_LU,
+        add, add_def, bitwise_not, bitwise_not_def, multiply, negate, no_array, Mat,
+        MatConstIterator, MatExprTraitConst, MatTrait, MatTraitConst, Point2f, Point_, Range, Rect,
+        Rect_, RotatedRect, Scalar, Size, Size2f, Size_, ToInputArray, Vec3b, Vector,
+        _InputArrayTraitConst, CV_32FC1, CV_32FC3, CV_32FC4, CV_32SC1, CV_8UC1, CV_8UC3,
+        CV_HAL_DFT_REAL_OUTPUT, DECOMP_LU,
     },
     highgui::{destroy_all_windows, imshow, wait_key},
     imgcodecs::{imread, IMREAD_COLOR},
     imgproc::resize,
-    prelude::{MatTraitConstManual, MatTraitManual},
+    prelude::{MatTraitConstManual, MatTraitManual, RangeTraitConst},
     Result,
 };
 use std::sync::Arc;
@@ -140,8 +141,8 @@ fn point_fn() -> Result<()> {
     pt1.y = 10;
 
     let pt2 = Point_::from((10, 10));
-    println!("{:?}", pt1);//Point_ { x: 10, y: 10 }
-    println!("{:?}", pt2);//Point_ { x: 10, y: 10 }
+    println!("{:?}", pt1); //Point_ { x: 10, y: 10 }
+    println!("{:?}", pt2); //Point_ { x: 10, y: 10 }
     Ok(())
 }
 fn size_fn() -> Result<()> {
@@ -149,8 +150,8 @@ fn size_fn() -> Result<()> {
     let mut sz2 = Size::default();
     sz2.width = 5;
     sz2.height = 10;
-    println!("{:?}", sz1);//Size_ { width: 10, height: 20 }
-    println!("{:?}", sz2);//Size_ { width: 5, height: 10 }
+    println!("{:?}", sz1); //Size_ { width: 10, height: 20 }
+    println!("{:?}", sz2); //Size_ { width: 5, height: 10 }
     Ok(())
 }
 
@@ -167,12 +168,12 @@ fn rect_fn() -> Result<()> {
     let rc5 = rc3 & rc4; //{ x: 20, y: 20, width: 30, height: 20 }
     let rc6 = rc3 | rc4; //{ x: 0, y: 0, width: 80, height: 60 }
 
-    println!("{:?}", rc1);//Rect_ { x: 0, y: 0, width: 0, height: 0 }
-    println!("{:?}", rc2);//Rect_ { x: 10, y: 10, width: 60, height: 40 }
-    println!("{:?}", rc3);//Rect_ { x: 0, y: 0, width: 50, height: 40 }
-    println!("{:?}", rc4);//Rect_ { x: 20, y: 20, width: 60, height: 40 }
-    println!("{:?}", rc5);//Rect_ { x: 20, y: 20, width: 30, height: 20 }
-    println!("{:?}", rc6);//Rect_ { x: 0, y: 0, width: 80, height: 60 }
+    println!("{:?}", rc1); //Rect_ { x: 0, y: 0, width: 0, height: 0 }
+    println!("{:?}", rc2); //Rect_ { x: 10, y: 10, width: 60, height: 40 }
+    println!("{:?}", rc3); //Rect_ { x: 0, y: 0, width: 50, height: 40 }
+    println!("{:?}", rc4); //Rect_ { x: 20, y: 20, width: 60, height: 40 }
+    println!("{:?}", rc5); //Rect_ { x: 20, y: 20, width: 30, height: 20 }
+    println!("{:?}", rc6); //Rect_ { x: 0, y: 0, width: 80, height: 60 }
 
     Ok(())
 }
@@ -190,14 +191,8 @@ fn rotated_rect_fn() -> Result<()> {
     //특정 개체를 감싸는 최소 크기의 사각형을 bounding box함
     let br = rr1.bounding_rect()?;
 
-
-
-
-
-
-    println!("{:?}", rr1);//RotatedRect { center: Point_ { x: 40.0, y: 30.0 }, size: Size_ { width: 40.0, height: 20.0 }, angle: 30.0 }
-    println!("{:?}", br);//Rect_ { x: 17, y: 11, width: 47, height: 39 }
-
+    println!("{:?}", rr1); //RotatedRect { center: Point_ { x: 40.0, y: 30.0 }, size: Size_ { width: 40.0, height: 20.0 }, angle: 30.0 }
+    println!("{:?}", br); //Rect_ { x: 17, y: 11, width: 47, height: 39 }
 
     Ok(())
 }
@@ -266,21 +261,17 @@ fn mat_fn() -> Result<()> {
     //create함수는 초기화 하는 기능은 없기때문에 핼렬 전체의 원소 값을 초기화 하고싶다면 set_to 함수를 사용해야함
     unsafe { mat4.create_size(Size::from((256, 256)), CV_8UC3)? };
 
-    println!("{:?}", img1);//Mat { type: "CV_8UC1", flags: 1124007936, channels: 1, depth: "CV_8U", dims: 0, size: Size_ { width: 0, height: 0 }, rows: 0, cols: 0, elem_size: 0, elem_size1: 1, total: 0, is_continuous: false, is_submatrix: false }
-    println!("{:?}", img2);//Mat { type: "CV_8UC1", flags: 1124024320, channels: 1, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 1, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
-    println!("{:?}", img3);//Mat { type: "CV_8UC3", flags: 1124024336, channels: 3, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 3, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
-    println!("{:?}", img4);//Mat { type: "CV_8UC3", flags: 1124024336, channels: 3, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 3, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
-    println!("{:?}", img5);//Mat { type: "CV_8UC1", flags: 1124024320, channels: 1, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 1, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
-    println!("{:?}", img6);//Mat { type: "CV_8UC3", flags: 1124024336, channels: 3, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 3, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
-    println!("{:?}", mat1);//Mat { type: "CV_32SC1", flags: 1124024324, channels: 1, depth: "CV_32S", dims: 2, size: Size_ { width: 3, height: 3 }, rows: 3, cols: 3, elem_size: 4, elem_size1: 4, total: 9, is_continuous: true, is_submatrix: false }
-    println!("{:?}", mat2);//Mat { type: "CV_32FC1", flags: 1124024325, channels: 1, depth: "CV_32F", dims: 2, size: Size_ { width: 3, height: 3 }, rows: 3, cols: 3, elem_size: 4, elem_size1: 4, total: 9, is_continuous: true, is_submatrix: false }
-    println!("{:?}", mat3);//Mat { type: "CV_32FC1", flags: 1124024325, channels: 1, depth: "CV_32F", dims: 2, size: Size_ { width: 3, height: 3 }, rows: 3, cols: 3, elem_size: 4, elem_size1: 4, total: 9, is_continuous: true, is_submatrix: false }
-    println!("{:?}", mat4);//Mat { type: "CV_8UC3", flags: 1124024336, channels: 3, depth: "CV_8U", dims: 2, size: Size_ { width: 256, height: 256 }, rows: 256, cols: 256, elem_size: 3, elem_size1: 1, total: 65536, is_continuous: true, is_submatrix: false }
-    println!("{:?}", mat5);//Mat { type: "CV_32FC1", flags: 1124024325, channels: 1, depth: "CV_32F", dims: 2, size: Size_ { width: 6, height: 6 }, rows: 6, cols: 6, elem_size: 4, elem_size1: 4, total: 36, is_continuous: true, is_submatrix: false }
-  
-
-
- 
+    println!("{:?}", img1); //Mat { type: "CV_8UC1", flags: 1124007936, channels: 1, depth: "CV_8U", dims: 0, size: Size_ { width: 0, height: 0 }, rows: 0, cols: 0, elem_size: 0, elem_size1: 1, total: 0, is_continuous: false, is_submatrix: false }
+    println!("{:?}", img2); //Mat { type: "CV_8UC1", flags: 1124024320, channels: 1, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 1, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
+    println!("{:?}", img3); //Mat { type: "CV_8UC3", flags: 1124024336, channels: 3, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 3, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
+    println!("{:?}", img4); //Mat { type: "CV_8UC3", flags: 1124024336, channels: 3, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 3, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
+    println!("{:?}", img5); //Mat { type: "CV_8UC1", flags: 1124024320, channels: 1, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 1, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
+    println!("{:?}", img6); //Mat { type: "CV_8UC3", flags: 1124024336, channels: 3, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 3, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
+    println!("{:?}", mat1); //Mat { type: "CV_32SC1", flags: 1124024324, channels: 1, depth: "CV_32S", dims: 2, size: Size_ { width: 3, height: 3 }, rows: 3, cols: 3, elem_size: 4, elem_size1: 4, total: 9, is_continuous: true, is_submatrix: false }
+    println!("{:?}", mat2); //Mat { type: "CV_32FC1", flags: 1124024325, channels: 1, depth: "CV_32F", dims: 2, size: Size_ { width: 3, height: 3 }, rows: 3, cols: 3, elem_size: 4, elem_size1: 4, total: 9, is_continuous: true, is_submatrix: false }
+    println!("{:?}", mat3); //Mat { type: "CV_32FC1", flags: 1124024325, channels: 1, depth: "CV_32F", dims: 2, size: Size_ { width: 3, height: 3 }, rows: 3, cols: 3, elem_size: 4, elem_size1: 4, total: 9, is_continuous: true, is_submatrix: false }
+    println!("{:?}", mat4); //Mat { type: "CV_8UC3", flags: 1124024336, channels: 3, depth: "CV_8U", dims: 2, size: Size_ { width: 256, height: 256 }, rows: 256, cols: 256, elem_size: 3, elem_size1: 1, total: 65536, is_continuous: true, is_submatrix: false }
+    println!("{:?}", mat5); //Mat { type: "CV_32FC1", flags: 1124024325, channels: 1, depth: "CV_32F", dims: 2, size: Size_ { width: 6, height: 6 }, rows: 6, cols: 6, elem_size: 4, elem_size1: 4, total: 36, is_continuous: true, is_submatrix: false }
 
     Ok(())
 }
@@ -309,18 +300,18 @@ fn mat_op1() -> Result<()> {
     unsafe { mat5.create_size(Size::from((4, 4)), CV_32FC1)? };
     mat4.set_scalar(Scalar::from((255, 0, 0)))?; //모든 픽셀을 파란색으로 설정
     mat5.set_to(&1., &no_array())?; //mat5의 모든 원소 값은 1.로 설정
-   
-    println!("{:?}", img1);//Mat { type: "CV_8UC1", flags: 1124007936, channels: 1, depth: "CV_8U", dims: 0, size: Size_ { width: 0, height: 0 }, rows: 0, cols: 0, elem_size: 0, elem_size1: 1, total: 0, is_continuous: false, is_submatrix: false }
-    println!("{:?}", img2);//Mat { type: "CV_8UC1", flags: 1124024320, channels: 1, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 1, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
-    println!("{:?}", img3);//Mat { type: "CV_8UC3", flags: 1124024336, channels: 3, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 3, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
-    println!("{:?}", img5);//Mat { type: "CV_8UC1", flags: 1124024320, channels: 1, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 1, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
-    println!("{:?}", img6);//Mat { type: "CV_8UC3", flags: 1124024336, channels: 3, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 3, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
-    println!("{:?}", mat1);//Mat { type: "CV_32SC1", flags: 1124024324, channels: 1, depth: "CV_32S", dims: 2, size: Size_ { width: 3, height: 3 }, rows: 3, cols: 3, elem_size: 4, elem_size1: 4, total: 9, is_continuous: true, is_submatrix: false }
-    println!("{:?}", mat2);//Mat { type: "CV_32FC1", flags: 1124024325, channels: 1, depth: "CV_32F", dims: 2, size: Size_ { width: 3, height: 3 }, rows: 3, cols: 3, elem_size: 4, elem_size1: 4, total: 9, is_continuous: true, is_submatrix: false }
-    println!("{:?}", mat3);//Mat { type: "CV_32FC1", flags: 1124024325, channels: 1, depth: "CV_32F", dims: 2, size: Size_ { width: 3, height: 3 }, rows: 3, cols: 3, elem_size: 4, elem_size1: 4, total: 9, is_continuous: true, is_submatrix: false }
-    println!("{:?}", mat4);//Mat { type: "CV_8UC3", flags: 1124024336, channels: 3, depth: "CV_8U", dims: 2, size: Size_ { width: 256, height: 256 }, rows: 256, cols: 256, elem_size: 3, elem_size1: 1, total: 65536, is_continuous: true, is_submatrix: false }
-    println!("{:?}", mat5);//Mat { type: "CV_32FC1", flags: 1124024325, channels: 1, depth: "CV_32F", dims: 2, size: Size_ { width: 4, height: 4 }, rows: 4, cols: 4, elem_size: 4, elem_size1: 4, total: 16, is_continuous: true, is_submatrix: false }
-  
+
+    println!("{:?}", img1); //Mat { type: "CV_8UC1", flags: 1124007936, channels: 1, depth: "CV_8U", dims: 0, size: Size_ { width: 0, height: 0 }, rows: 0, cols: 0, elem_size: 0, elem_size1: 1, total: 0, is_continuous: false, is_submatrix: false }
+    println!("{:?}", img2); //Mat { type: "CV_8UC1", flags: 1124024320, channels: 1, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 1, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
+    println!("{:?}", img3); //Mat { type: "CV_8UC3", flags: 1124024336, channels: 3, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 3, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
+    println!("{:?}", img5); //Mat { type: "CV_8UC1", flags: 1124024320, channels: 1, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 1, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
+    println!("{:?}", img6); //Mat { type: "CV_8UC3", flags: 1124024336, channels: 3, depth: "CV_8U", dims: 2, size: Size_ { width: 640, height: 480 }, rows: 480, cols: 640, elem_size: 3, elem_size1: 1, total: 307200, is_continuous: true, is_submatrix: false }
+    println!("{:?}", mat1); //Mat { type: "CV_32SC1", flags: 1124024324, channels: 1, depth: "CV_32S", dims: 2, size: Size_ { width: 3, height: 3 }, rows: 3, cols: 3, elem_size: 4, elem_size1: 4, total: 9, is_continuous: true, is_submatrix: false }
+    println!("{:?}", mat2); //Mat { type: "CV_32FC1", flags: 1124024325, channels: 1, depth: "CV_32F", dims: 2, size: Size_ { width: 3, height: 3 }, rows: 3, cols: 3, elem_size: 4, elem_size1: 4, total: 9, is_continuous: true, is_submatrix: false }
+    println!("{:?}", mat3); //Mat { type: "CV_32FC1", flags: 1124024325, channels: 1, depth: "CV_32F", dims: 2, size: Size_ { width: 3, height: 3 }, rows: 3, cols: 3, elem_size: 4, elem_size1: 4, total: 9, is_continuous: true, is_submatrix: false }
+    println!("{:?}", mat4); //Mat { type: "CV_8UC3", flags: 1124024336, channels: 3, depth: "CV_8U", dims: 2, size: Size_ { width: 256, height: 256 }, rows: 256, cols: 256, elem_size: 3, elem_size1: 1, total: 65536, is_continuous: true, is_submatrix: false }
+    println!("{:?}", mat5); //Mat { type: "CV_32FC1", flags: 1124024325, channels: 1, depth: "CV_32F", dims: 2, size: Size_ { width: 4, height: 4 }, rows: 4, cols: 4, elem_size: 4, elem_size1: 4, total: 16, is_continuous: true, is_submatrix: false }
+
     Ok(())
 }
 
@@ -363,26 +354,29 @@ fn mat_op3() -> Result<()> {
     if img1.empty() {
         panic!("image load failed");
     }
+    let img2 = img1.roi_mut(Rect::from((220, 120, 340, 240)))?;
 
     // 부분 행렬을 참조하는 방법
-    let rect = Rect::new(220, 120, 340, 240);
-    for y in rect.y..rect.y + rect.height {
-        for x in rect.x..rect.x + rect.width {
-            let pixel = img1.at_2d_mut::<Vec3b>(y, x)?;
-            // 예를 들어, 픽셀 색상을 반전시킵니다.
-            *pixel = Vec3b::from([255 - pixel[0], 255 - pixel[1], 255 - pixel[2]]);
-        }
-    }
-
+    // let rect = Rect::new(220, 120, 340, 240);
+    // for y in rect.y..rect.y + rect.height {
+    //     for x in rect.x..rect.x + rect.width {
+    //         let pixel = img1.at_2d_mut::<Vec3b>(y, x)?;
+    //         // 예를 들어, 픽셀 색상을 반전시킵니다.
+    //         *pixel = Vec3b::from([255 - pixel[0], 255 - pixel[1], 255 - pixel[2]]);
+    //     }
+    // }
+    let mut img2_dst = Mat::default();
     // img1에 반영된 결과를 보여줍니다.
-    imshow("img1", &img1)?;
+    bitwise_not_def(&img2, &mut img2_dst)?;
+    // let img2 = !img2;
+    imshow("img1",&img1)?;
+    imshow("img2", &img2)?;
 
     wait_key(0)?;
     destroy_all_windows()?;
     Ok(())
 }
 fn mat_op4() -> Result<()> {
-    
     let mut mat1 = Mat::zeros(3, 4, CV_8UC1)?.to_mat()?;
     //행렬의 특정 위치에 있는 값을 참조하여 값을 수정하는 코드
     for j in 0..mat1.rows() {
@@ -466,10 +460,10 @@ fn mat_07() -> Result<()> {
 }
 fn scalar_op() -> Result<()> {
     let gray = Scalar::from(128);
-    println!("{:?}", gray);//VecN([128.0, 0.0, 0.0, 0.0])
+    println!("{:?}", gray); //VecN([128.0, 0.0, 0.0, 0.0])
 
     let yellow: opencv::core::VecN<f64, 4> = Scalar::from((0, 255, 255));
-    println!("{:?}", yellow);//VecN([0.0, 255.0, 255.0, 0.0])
+    println!("{:?}", yellow); //VecN([0.0, 255.0, 255.0, 0.0])
     let img1 = Mat::new_rows_cols_with_default(256, 256, CV_8UC3, yellow)?;
 
     for i in 0..4 {
@@ -477,7 +471,7 @@ fn scalar_op() -> Result<()> {
     }
 
     /*
-    
+
     0.0
     255.0
     255.0
@@ -487,11 +481,9 @@ fn scalar_op() -> Result<()> {
 }
 
 fn input_array() -> Result<()> {
-
-
     /*
     inputArray클래스는 Mat,Matx,vector,uMat같은 타입으로부터 생성될수 잇는 인터페이스 클래스
-    
+
      */
     let data1: [u8; 6] = [1, 2, 3, 4, 5, 6];
     let mat1 = Mat::new_rows_cols_with_data(2, 3, &data1)?.clone_pointee();
@@ -506,14 +498,14 @@ fn input_array() -> Result<()> {
 pub fn main() -> Result<()> {
     // mat_op1()?;
     // mat_op2()?;
-    // mat_op3()?;
+    mat_op3()?;
     // mat_op4()?;
     // mat_05()?;
     // mat_06()?;
     // mat_07()?;
     // point_fn()?;
     // size_fn()?;
-    scalar_op()?;
+    // scalar_op()?;
     // input_array()?;
     // rect_fn()?;
     // rotated_rect_fn()?;
