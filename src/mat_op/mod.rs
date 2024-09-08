@@ -134,7 +134,7 @@ use opencv::{
 };
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::{any::Any, ffi::c_void};
+use std::{any::Any};
 fn point_fn() -> Result<()> {
     let mut pt1: Point_<i32> = Point_::default(); //0,0
     pt1.x = 10;
