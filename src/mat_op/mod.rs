@@ -354,23 +354,23 @@ fn mat_op3() -> Result<()> {
     if img1.empty() {
         panic!("image load failed");
     }
-    let img2 = img1.roi_mut(Rect::from((220, 120, 340, 240)))?;
+    // let img2 = img1.roi_mut(Rect::from((220, 120, 340, 240)))?;
 
     // 부분 행렬을 참조하는 방법
-    // let rect = Rect::new(220, 120, 340, 240);
-    // for y in rect.y..rect.y + rect.height {
-    //     for x in rect.x..rect.x + rect.width {
-    //         let pixel = img1.at_2d_mut::<Vec3b>(y, x)?;
-    //         // 예를 들어, 픽셀 색상을 반전시킵니다.
-    //         *pixel = Vec3b::from([255 - pixel[0], 255 - pixel[1], 255 - pixel[2]]);
-    //     }
-    // }
-    let mut img2_dst = Mat::default();
+    let rect = Rect::new(220, 120, 340, 240);
+    for y in rect.y..rect.y + rect.height {
+        for x in rect.x..rect.x + rect.width {
+            let pixel = img1.at_2d_mut::<Vec3b>(y, x)?;
+            // 예를 들어, 픽셀 색상을 반전시킵니다.
+            *pixel = Vec3b::from([255 - pixel[0], 255 - pixel[1], 255 - pixel[2]]);
+        }
+    }
+    // let mut img2_dst = Mat::default();
     // img1에 반영된 결과를 보여줍니다.
-    bitwise_not_def(&img2, &mut img2_dst)?;
+    // bitwise_not_def(&img2, &mut img2_dst)?;
     // let img2 = !img2;
     imshow("img1",&img1)?;
-    imshow("img2", &img2)?;
+    // imshow("img2", &img2)?;
 
     wait_key(0)?;
     destroy_all_windows()?;
