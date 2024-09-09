@@ -31,6 +31,17 @@ calcHist
 - accumulate:누적 플러그 ,이값이 True이면 hist배열을 초기화 하지않고 누적하여 히스토그램 계산
 
 하나의 그레이 스케일 로부터 히스토그램을 구하는 코드
+
+calc_gray_hist()함수는 내부에서 calc_hist()함수를 이용하여 그레이스케일 영상의 히스토그램을 표현하는 행렬 hist를 구하여 반환합니다.
+이떄 반환하는 hist는 CV_32FC1타입을 갖는 256x1크기의 행렬입니다.즉 hist행렬의 행 개수는 256 열은 1 입니다
+calc_gray_hist()함수로 구한 행렬을 막대그래프로 나타내려면 hist행렬을 참조하여 막대 그래프영상을 생성해야합니다 
+hist행렬로부터 가로가 256픽셀 세로가 100픽셀인 크기의 히스토그램 영상을 생성할수 잇습니다.
+
+
+
+히스토그램 스트레칭
+
+히스토그램 스트레칭은 영상의 히스토그램이 그레이스케일 전 구간에 걸쳐서 나타나다도록 변경하는 선형 변환 기법입니다.
 */
 
 use opencv::{
@@ -109,7 +120,7 @@ fn get_gray_hist_image(hist: &Mat) -> Result<Mat> {
 
     Ok((img_hist))
 }
-fn b() -> Result<()> {
+fn test() -> Result<()> {
     let src = imread("./img/camera.bmp", IMREAD_GRAYSCALE)?;
     if src.empty() {
         panic!("error");
@@ -195,7 +206,7 @@ fn histogram_equzlization() -> Result<()> {
     Ok(())
 }
 pub fn main() -> Result<()> {
-    b()?;
+    test()?;
     // histogram()?;
     // histogram_equzlization()?;
     Ok(())
